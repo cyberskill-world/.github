@@ -1,9 +1,13 @@
 name: CI - Lint & Build
+description: This action lints and builds the project
 
 runs:
   using: "composite"
   steps:
     - name: 🧹 Run lint
+      shell: bash
       run: pnpm lint
+
     - name: 🏗️ Build project
+      shell: bash
       run: pnpm build
