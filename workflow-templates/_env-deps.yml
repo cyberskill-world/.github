@@ -1,0 +1,37 @@
+name: CI - Setup Environment and Dependencies
+
+on:
+  workflow_call:
+
+jobs:
+  env-deps:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚀 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: 🧰 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.14.0'
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 🗂️ Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: 📝 Setup environment variables
+        run: cp .env.example .env

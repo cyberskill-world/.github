@@ -1,0 +1,4 @@
+{
+    "name": "CI - Setup Environment and Dependencies",
+    "description": "Setup environment and dependencies for CI/CD pipeline"
+}

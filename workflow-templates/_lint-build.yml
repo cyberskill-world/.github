@@ -1,0 +1,15 @@
+name: CI - Lint & Build
+
+on:
+  workflow_call:
+
+jobs:
+  lint-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧹 Run lint
+        run: pnpm lint
+
+      - name: 🏗️ Build project
+        run: pnpm build
