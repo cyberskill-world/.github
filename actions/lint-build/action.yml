@@ -1,0 +1,9 @@
+name: CI - Lint & Build
+
+runs:
+  using: "composite"
+  steps:
+    - name: 🧹 Run lint
+      run: pnpm lint
+    - name: 🏗️ Build project
+      run: pnpm build
