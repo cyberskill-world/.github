@@ -1,4 +1,4 @@
-name: 📂 CI - Lint & Build
+name: 🛠️ CI - Lint & Build
 description: This action lints and builds the project
 
 runs:
