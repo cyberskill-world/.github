@@ -16,9 +16,9 @@ runs:
         node-version: "22.14.0"
         cache: "pnpm"
 
-    - name: 🔄 Pull latest changes
+    - name: 🔄 Pull latest changes (with rebase)
       shell: bash
-      run: git pull
+      run: git pull --rebase
 
     - name: 📦 Install dependencies
       shell: bash
