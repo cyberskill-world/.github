@@ -20,6 +20,10 @@ runs:
       shell: bash
       run: git pull --rebase
 
+    - name: 📝 Setup environment variables
+      shell: bash
+      run: cp .env.example .env
+
     - name: 📦 Install dependencies
       shell: bash
       run: pnpm install
@@ -34,6 +38,4 @@ runs:
         restore-keys: |
           ${{ runner.os }}-pnpm-
 
-    - name: 📝 Setup environment variables
-      shell: bash
-      run: cp .env.example .env
+
