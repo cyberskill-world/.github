@@ -13,13 +13,13 @@ runs:
       shell: bash
       run: |
         if git diff --exit-code; then
-            echo "changes=false" >> $GITHUB_ENV
+            echo "HAVE_CHANGES=false" >> $GITHUB_ENV
         else
-            echo "changes=true" >> $GITHUB_ENV
+            echo "HAVE_CHANGES=true" >> $GITHUB_ENV
         fi
     - name: ✍️ Commit and push changes
       shell: bash
-      if: env.changes == 'true'
+      if: env.HAVE_CHANGES == 'true'
       env:
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
       run: |

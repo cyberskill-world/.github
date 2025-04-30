@@ -15,6 +15,8 @@ runs:
       run: |
         if [ "${GITHUB_REF##*/}" != "${{ inputs.BRANCH }}" ]; then
           echo "Not on '${{ inputs.BRANCH }}' branch. Skipping.";
-          exit 0  # Skip further steps without failing the job
+          echo "SHOULD_CONTINUE=false" >> $GITHUB_ENV
+          exit 0
         fi
-        echo "On '${{ inputs.BRANCH }}' branch. Proceeding."
+        echo "On '${{ inputs.BRANCH }}' branch. Continuing."
+        echo "SHOULD_CONTINUE=true" >> $GITHUB_ENV  # Proceed if the branch matches
