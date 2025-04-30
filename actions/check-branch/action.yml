@@ -2,7 +2,7 @@ name: 🔍 CI - Check Branch
 description: This action checks if the current branch matches the target branch
 
 inputs:
-  target_branch:
+  BRANCH:
     description: 'Branch to check against'
     required: true
     default: 'main'
@@ -13,8 +13,8 @@ runs:
     - name: 🚨 Check if branch matches the target branch
       shell: bash
       run: |
-        if [ "${GITHUB_REF##*/}" != "${{ inputs.target_branch }}" ]; then
-          echo "Not on '${{ inputs.target_branch }}' branch. Skipping.";
+        if [ "${GITHUB_REF##*/}" != "${{ inputs.BRANCH }}" ]; then
+          echo "Not on '${{ inputs.BRANCH }}' branch. Skipping.";
           exit 0  # Skip further steps without failing the job
         fi
-        echo "On '${{ inputs.target_branch }}' branch. Proceeding."
+        echo "On '${{ inputs.BRANCH }}' branch. Proceeding."
