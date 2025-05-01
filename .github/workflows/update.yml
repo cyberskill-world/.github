@@ -1,0 +1,41 @@
+on:
+  workflow_call:
+    inputs:
+      BRANCH:
+        description: 'Branch to update'
+        required: true
+        type: string
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚨 Check branch
+        uses: cyberskill-world/.github/actions/check-branch@main
+        with:
+          BRANCH: ${{ inputs.BRANCH }}
+
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        if: env.SHOULD_CONTINUE == 'true'
+
+      - name: 🔧 Setup Environment and Dependencies
+        uses: cyberskill-world/.github/actions/env-deps@main
+        if: env.SHOULD_CONTINUE == 'true'
+
+      - name: ⚙️ Update Dependencies
+        run: |
+          pnpm run --if-present prepare
+          pnpm run --if-present lint:fix
+        if: env.SHOULD_CONTINUE == 'true'
+
+      - name: 🛠️ Lint & Build
+        uses: cyberskill-world/.github/actions/lint-build@main
+        if: env.SHOULD_CONTINUE == 'true'
+
+      - name: 📝 Commit Changes
+        uses: cyberskill-world/.github/actions/commit-changes@main
+        if: env.SHOULD_CONTINUE == 'true'
+        with:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
