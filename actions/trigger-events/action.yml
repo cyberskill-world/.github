@@ -13,14 +13,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Debug GH_TOKEN
-      shell: bash
-      run: |
-        if [ -z "${{ inputs.GH_TOKEN }}" ]; then
-          echo "GH_TOKEN is not set"
-        else
-          echo "GH_TOKEN is set"
-        fi
     - name: 🐛 Trigger events in the repository
       shell: bash
       run: |
