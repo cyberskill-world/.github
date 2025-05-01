@@ -20,6 +20,6 @@ runs:
         for event in "${EVENTS[@]}"; do
           curl -X POST \
           -H "Authorization: token ${{ inputs.GH_TOKEN }}" \
-          -d '{"event_type": "'$event'"}' \
+          -d "{\"event_type\": \"$event\"}" \
           https://api.github.com/repos/${{ inputs.REPO }}/dispatches
         done
