@@ -18,7 +18,7 @@ runs:
           echo "Triggering event '$event' for repository '${{ inputs.REPO }}'"
           event_escaped=$(echo "$event" | sed 's/ /%20/g')
           curl -X POST \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
           -d '{"event_type": "'$event_escaped'"}' \
           https://api.github.com/repos/${{ inputs.REPO }}/dispatches
         done
