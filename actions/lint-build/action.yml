@@ -6,8 +6,8 @@ runs:
   steps:
     - name: 🧹 Run lint
       shell: bash
-      run: cyberskill lint
+      run: pnpm lint
 
     - name: 🏗️ Build project
       shell: bash
-      run: cyberskill build
+      run: pnpm build
