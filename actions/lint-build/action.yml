@@ -6,7 +6,7 @@ runs:
   steps:
     - name: 🧹 Run lint
       shell: bash
-      run: pnpm lint
+      run: pnpm lint --if-present
 
     - name: 🏗️ Build project
       shell: bash
