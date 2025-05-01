@@ -13,7 +13,7 @@ runs:
     - name: 🧰 Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: "22.14.0"
+        node-version: "22.15.0"
         cache: "pnpm"
 
     - name: 🔄 Pull latest changes (with rebase)
