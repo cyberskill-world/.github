@@ -1,3 +1,4 @@
+name: 📈 CI - Update
 on:
   workflow_call:
     inputs:
@@ -9,11 +10,9 @@ on:
         description: 'Fallback if BRANCH is not provided'
         required: true
         type: string
-
 jobs:
   update:
     runs-on: ubuntu-latest
-
     steps:
       - name: 🕒 Determine target branch
         run: |
