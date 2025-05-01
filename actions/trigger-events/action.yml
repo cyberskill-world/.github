@@ -1,0 +1,24 @@
+name: 🔥 CI - Trigger Events
+description: This action triggers multiple events for a single repository
+inputs:
+  REPO:
+    description: "Repository to trigger events for"
+    required: true
+  EVENTS:
+    description: "Comma-separated list of event types to trigger (supporting spaces and icons)"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: 🐛 Trigger events in the repository 
+      shell: bash
+      run: |
+        IFS=',' read -ra EVENTS <<< "${{ inputs.EVENTS }}"
+        for event in "${EVENTS[@]}"; do
+          echo "Triggering event '$event' for repository '${{ inputs.REPO }}'"
+          event_escaped=$(echo "$event" | sed 's/ /%20/g')
+          curl -X POST \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"event_type": "'$event_escaped'"}' \
+          https://api.github.com/repos/${{ inputs.REPO }}/dispatches
+        done

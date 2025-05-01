@@ -1,6 +1,5 @@
 name: 🔧 CI - Setup Environment and Dependencies
 description: This action sets up the environment and installs dependencies for the CI pipeline.
-
 runs:
   using: "composite"
   steps:
@@ -9,25 +8,20 @@ runs:
       with:
         version: 10
         run_install: false
-
     - name: 🧰 Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: "22.15.0"
         cache: "pnpm"
-
     - name: 🔄 Pull latest changes (with rebase)
       shell: bash
       run: git pull --rebase
-
     - name: 📝 Setup environment variables
       shell: bash
       run: cp .env.example .env
-
     - name: 📦 Install dependencies
       shell: bash
       run: pnpm install
-
     - name: 🗂️ Cache pnpm dependencies
       uses: actions/cache@v4
       with:
