@@ -18,8 +18,9 @@ runs:
       run: |
         IFS=',' read -ra EVENTS <<< "${{ inputs.EVENTS }}"
         for event in "${EVENTS[@]}"; do
+          event_trimmed=$(echo "$event" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
           curl -X POST \
           -H "Authorization: token ${{ inputs.GH_TOKEN }}" \
-          -d "{\"event_type\": \"$event\"}" \
+          -d "{\"event_type\": \"$event_trimmed\"}" \
           https://api.github.com/repos/${{ inputs.REPO }}/dispatches
         done
