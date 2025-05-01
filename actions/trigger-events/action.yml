@@ -18,10 +18,8 @@ runs:
       run: |
         IFS=',' read -ra EVENTS <<< "${{ inputs.EVENTS }}"
         for event in "${EVENTS[@]}"; do
-          echo "Triggering event '$event' for repository '${{ inputs.REPO }}'"
-          event_escaped=$(echo "$event" | sed 's/ /%20/g')
           curl -X POST \
           -H "Authorization: token ${{ inputs.GH_TOKEN }}" \
-          -d '{"event_type": "'$event_escaped'"}' \
+          -d '{"event_type": "'$event'"}' \
           https://api.github.com/repos/${{ inputs.REPO }}/dispatches
         done
