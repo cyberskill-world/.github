@@ -5,7 +5,6 @@ inputs:
   BRANCH:
     description: 'Branch to check against'
     required: true
-    default: 'main'
 
 runs:
   using: 'composite'
