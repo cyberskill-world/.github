@@ -3,6 +3,10 @@ on:
     inputs:
       BRANCH:
         description: 'Branch to update'
+        required: false
+        type: string
+      FALLBACK_BRANCH:
+        description: 'Fallback if BRANCH is not provided'
         required: true
         type: string
 
@@ -11,10 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: 🕒 Determine target branch
+        run: |
+          if [ -z "${{ inputs.BRANCH }}" ]; then
+            BRANCH="${{ inputs.FALLBACK_BRANCH }}"
+          else
+            BRANCH="${{ inputs.BRANCH }}"
+          fi
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+
       - name: 🚨 Check branch
         uses: cyberskill-world/.github/actions/check-branch@main
         with:
-          BRANCH: ${{ inputs.BRANCH }}
+          BRANCH: ${{ env.BRANCH }}
 
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
