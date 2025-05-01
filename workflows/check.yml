@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🔧 Setup Environment and Dependencies
-        uses: cyberskill-world/.github/actions/env-deps@main
+        uses: cyberskill-world/.github/actions/env-deps.yml@main
 
       - name: 🛠️ Lint & Build
-        uses: cyberskill-world/.github/actions/lint-build@main
+        uses: cyberskill-world/.github/actions/lint-build.yml@main
