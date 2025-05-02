@@ -13,9 +13,6 @@ runs:
       with:
         node-version: "22.15.0"
         cache: "pnpm"
-    - name: 🔄 Pull latest changes (with rebase)
-      shell: bash
-      run: git pull --rebase
     - name: 📝 Setup environment variables
       shell: bash
       run: cp .env.example .env
