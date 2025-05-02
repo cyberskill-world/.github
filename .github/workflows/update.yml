@@ -1,11 +1,13 @@
 name: 📈 CI - Update
+
 on:
   workflow_call:
     inputs:
       BRANCH:
-        description: 'Branch to update'
+        description: "Branch to update"
         required: false
         type: string
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -14,20 +16,23 @@ jobs:
         uses: cyberskill-world/.github/actions/check-branch@main
         with:
           BRANCH: ${{ inputs.BRANCH }}
+
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
         if: env.SHOULD_CONTINUE == 'true'
+
       - name: 🔧 Setup Environment and Dependencies
         uses: cyberskill-world/.github/actions/env-deps@main
         if: env.SHOULD_CONTINUE == 'true'
+
       - name: ⚙️ Update Dependencies
-        run: |
-          pnpm run --if-present prepare
-          pnpm run --if-present lint:fix
+        run: pnpm run --if-present prepare
         if: env.SHOULD_CONTINUE == 'true'
+
       - name: 🛠️ Lint & Build
         uses: cyberskill-world/.github/actions/lint-build@main
         if: env.SHOULD_CONTINUE == 'true'
+
       - name: 📝 Commit Changes
         uses: cyberskill-world/.github/actions/commit-changes@main
         if: env.SHOULD_CONTINUE == 'true'

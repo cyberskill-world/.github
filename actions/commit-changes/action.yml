@@ -1,9 +1,11 @@
 name: 📝 CI - Commit Changes
 description: This action commits changes to the repository
+
 inputs:
   GH_TOKEN:
     description: "GitHub token for authentication"
     required: true
+
 runs:
   using: "composite"
   steps:
@@ -15,6 +17,7 @@ runs:
         else
             echo "HAVE_CHANGES=true" >> $GITHUB_ENV
         fi
+
     - name: ✍️ Commit and push changes
       shell: bash
       if: env.HAVE_CHANGES == 'true'
