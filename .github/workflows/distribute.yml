@@ -63,13 +63,13 @@ jobs:
           EVENTS: |
             📈 CI - Update
 
-      # - name: 8. Cyber Sheet
-      #   uses: cyberskill-world/.github/actions/trigger-events@main
-      #   with:
-      #     GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      #     REPO: "cyberskill-world/cyber-sheet"
-      #     EVENTS: |
-      #       📈 CI - Update
+      - name: 8. Cyber Sheet
+        uses: cyberskill-world/.github/actions/trigger-events@main
+        with:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          REPO: "cyberskill-world/cyber-sheet"
+          EVENTS: |
+            📈 CI - Update
 
       # - name: 9. Landing Page
       #   uses: cyberskill-world/.github/actions/trigger-events@main
