@@ -71,13 +71,13 @@ jobs:
           EVENTS: |
             📈 CI - Update
 
-      # - name: 9. Landing Page
-      #   uses: cyberskill-world/.github/actions/trigger-events@main
-      #   with:
-      #     GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      #     REPO: "cyberskill-world/landing-page"
-      #     EVENTS: |
-      #       📈 CI - Update
+      - name: 9. Landing Page
+        uses: cyberskill-world/.github/actions/trigger-events@main
+        with:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          REPO: "cyberskill-world/landing-page"
+          EVENTS: |
+            📈 CI - Update
 
       - name: 10. CNLGaming Backend
         uses: cyberskill-world/.github/actions/trigger-events@main
