@@ -94,3 +94,11 @@ jobs:
           REPO: "Cnlgaming-com/cnlgaming-fe"
           EVENTS: |
             📈 CI - Update
+
+      - name: 12. ODHQ Backend
+        uses: cyberskill-world/.github/actions/trigger-events@main
+        with:
+          GH_TOKEN: ${{ secrets.GH_TOKEN_CNL }}
+          REPO: "cyberskill-world/odhq-be"
+          EVENTS: |
+            📈 CI - Update
