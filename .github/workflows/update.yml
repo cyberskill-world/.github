@@ -20,6 +20,10 @@ jobs:
       - name: 🔧 Setup Environment and Dependencies
         uses: cyberskill-world/.github/actions/env-deps@main
         if: env.SHOULD_CONTINUE == 'true'
+      - name: 🔄 Pull latest changes
+        shell: bash
+        run: |
+          git pull --rebase origin ${{ inputs.BRANCH }}
       - name: ⚙️ Update Dependencies
         run: pnpm run --if-present prepare
         if: env.SHOULD_CONTINUE == 'true'

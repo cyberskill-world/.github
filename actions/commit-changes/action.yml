@@ -28,5 +28,4 @@ runs:
       run: |
         git add --all
         git commit -m "chore(CI): update libs"
-        git pull --rebase
         git push
