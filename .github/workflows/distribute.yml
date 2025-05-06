@@ -1,104 +1,102 @@
 name: 🌍 CI - Distribute
-
 on:
   workflow_call:
-
 jobs:
   distribute:
     runs-on: ubuntu-latest
     steps:
-      - name: 1. Template Frontend Vite React
+      # Templates
+      - name: Template Frontend Vite React
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO: "cyberskill-world/template-fe-vite-react"
           EVENTS: |
             📈 CI - Update
-
-      - name: 2. Template Frontend NextJS
+      - name: Template Frontend NextJS
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO: "cyberskill-world/template-fe-nextjs"
           EVENTS: |
             📈 CI - Update
-
-      - name: 3. Template Backend NodeJS
+      - name: Template Backend NodeJS
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO: "cyberskill-world/template-be-nodejs"
           EVENTS: |
             📈 CI - Update
-
-      - name: 4. Template Backend NestJS
+      - name: Template Backend NestJS
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO: "cyberskill-world/template-be-nestjs"
           EVENTS: |
             📈 CI - Update
-
-      - name: 5. Template Mobile React Native
+      - name: Template Mobile React Native
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO: "cyberskill-world/template-mobile-react-native"
           EVENTS: |
             📈 CI - Update
-
-      - name: 6. Template Mobile Flutter
+      - name: Template Mobile Flutter
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO: "cyberskill-world/template-mobile-flutter"
           EVENTS: |
             📈 CI - Update
-
-      - name: 7. Cyber Editor
+      # Internal products
+      - name: Cyber Editor
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO: "cyberskill-world/cyber-editor"
           EVENTS: |
             📈 CI - Update
-
-      - name: 8. Cyber Sheet
+      - name: Cyber Sheet
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO: "cyberskill-world/cyber-sheet"
           EVENTS: |
             📈 CI - Update
-
-      - name: 9. Landing Page
+      - name: Landing Page
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO: "cyberskill-world/landing-page"
           EVENTS: |
             📈 CI - Update
-
-      - name: 10. CNLGaming Backend
+      # CNLGaming
+      - name: CNLGaming Backend
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN_CNL }}
           REPO: "Cnlgaming-com/cnlgaming-be"
           EVENTS: |
             📈 CI - Update
-
-      - name: 11. CNLGaming Frontend
+      - name: CNLGaming Frontend
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN_CNL }}
           REPO: "Cnlgaming-com/cnlgaming-fe"
           EVENTS: |
             📈 CI - Update
-
-      - name: 12. ODHQ Backend
+      # ODHQ
+      - name: ODHQ Backend
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
-          GH_TOKEN: ${{ secrets.GH_TOKEN_CNL }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO: "cyberskill-world/odhq-be"
+          EVENTS: |
+            📈 CI - Update
+      - name: ODHQ Admin
+        uses: cyberskill-world/.github/actions/trigger-events@main
+        with:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          REPO: "cyberskill-world/odhq-admin"
           EVENTS: |
             📈 CI - Update

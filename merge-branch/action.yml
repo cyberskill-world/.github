@@ -1,0 +1,39 @@
+name: 🔀 CI - Merge Branch
+description: This action merges the specific branch into the target branch
+inputs:
+  GH_TOKEN:
+    description: "GitHub token for authentication"
+    required: true
+  FROM:
+    description: "The branch to merge from"
+    required: true
+  TO:
+    description: "The branch to merge into"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: 📥 Checkout repository to merge into (TO)
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.TO }}
+    - name: ⚙️ Set up Git
+      shell: bash
+      run: |
+        git config user.name "actions@github.com"
+        git config user.email "${GITHUB_ACTOR}"
+    - name: Pull latest changes from TO branch
+      shell: bash
+      run: |
+        git pull --rebase origin ${{ inputs.TO }}
+    - name: 🔁 Merge FROM branch into TO branch
+      shell: bash
+      run: |
+        git fetch origin ${{ inputs.FROM }}
+        git merge origin/${{ inputs.FROM }} --no-ff -m "chore(CI): merge ${{ inputs.FROM }} into ${{ inputs.TO }}"
+    - name: ✍️ Commit and push changes
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.GH_TOKEN }}
+      run: |
+        git push origin ${{ inputs.TO }}

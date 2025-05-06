@@ -1,14 +1,17 @@
 name: 📝 CI - Commit Changes
 description: This action commits changes to the repository
-
 inputs:
   GH_TOKEN:
     description: "GitHub token for authentication"
     required: true
-
 runs:
   using: "composite"
   steps:
+    - name: ⚙️ Set up Git
+      shell: bash
+      run: |
+        git config user.name "actions@github.com"
+        git config user.email "${GITHUB_ACTOR}"
     - name: 🚨 Check if there are changes to commit
       shell: bash
       run: |
@@ -17,15 +20,12 @@ runs:
         else
             echo "HAVE_CHANGES=true" >> $GITHUB_ENV
         fi
-
     - name: ✍️ Commit and push changes
       shell: bash
       if: env.HAVE_CHANGES == 'true'
       env:
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
       run: |
-        git config --global user.email "actions@github.com"
-        git config --global user.name "${GITHUB_ACTOR}"
         git add --all
         git commit -m "chore(CI): update libs"
         git pull --rebase
