@@ -28,8 +28,6 @@ runs:
         git fetch origin ${{ inputs.FROM }}
         git merge origin/${{ inputs.FROM }} --no-ff -m "chore(CI): merge ${{ inputs.FROM }} into ${{ inputs.TO }}"
     - name: ✍️ Commit and push changes
-      shell: bash
-      env:
-        GH_TOKEN: ${{ inputs.GH_TOKEN }}
-      run: |
-        git push origin ${{ inputs.TO }}
+      uses: cyberskill-world/.github/actions/commit-changes@main
+      with:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
