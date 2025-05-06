@@ -13,10 +13,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: 📥 Checkout repository to merge into (TO)
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ inputs.TO }}
     - name: ⚙️ Set up Git
       shell: bash
       run: |
