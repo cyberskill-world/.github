@@ -15,23 +15,24 @@ jobs:
         with:
           BRANCH: ${{ inputs.BRANCH }}
       - name: 📥 Checkout repository
+        if: env.SHOULD_CONTINUE == 'true'
         uses: actions/checkout@v4
-        if: env.SHOULD_CONTINUE == 'true'
       - name: 🔧 Setup Environment and Dependencies
-        uses: cyberskill-world/.github/actions/env-deps@main
         if: env.SHOULD_CONTINUE == 'true'
+        uses: cyberskill-world/.github/actions/env-deps@main
       - name: 🔄 Pull latest changes
-        shell: bash
+        if: env.SHOULD_CONTINUE == 'true'
         run: |
           git pull --rebase origin ${{ inputs.BRANCH }}
       - name: ⚙️ Update Dependencies
-        run: pnpm run --if-present prepare
         if: env.SHOULD_CONTINUE == 'true'
+        run: |
+          pnpm run --if-present prepare
       - name: 🛠️ Lint & Build
+        if: env.SHOULD_CONTINUE == 'true'
         uses: cyberskill-world/.github/actions/lint-build@main
-        if: env.SHOULD_CONTINUE == 'true'
       - name: 📝 Commit Changes
-        uses: cyberskill-world/.github/actions/commit-changes@main
         if: env.SHOULD_CONTINUE == 'true'
+        uses: cyberskill-world/.github/actions/commit-changes@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
