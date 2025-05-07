@@ -22,8 +22,9 @@ runs:
     - name: Pull latest changes then merge
       shell: bash
       run: |
-        git fetch origin ${{ inputs.FROM }}
-        git fetch origin ${{ inputs.TO }}
+        git checkout ${{ inputs.FROM }}
+        git fetch origin
         git checkout ${{ inputs.TO }}
-        git merge origin/${{ inputs.FROM }} --allow-unrelated-histories
+        git pull
+        git merge origin/${{ inputs.FROM }}
         git push origin ${{ inputs.TO }}
