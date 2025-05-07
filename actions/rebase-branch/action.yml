@@ -31,4 +31,4 @@ runs:
         git checkout ${{ inputs.TO }}
         git reset --hard origin/${{ inputs.TO }}
         git rebase origin/${{ inputs.FROM }} --strategy-option ${{ inputs.CHOOSE_STRATEGY }} 
-        git push origin ${{ inputs.TO }}
+        git push origin ${{ inputs.TO }} --force-with-lease
