@@ -13,7 +13,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: 🐛 Trigger events in the repository
+    - name: Trigger events in the repository
       shell: bash
       run: |
         IFS='\n' read -ra EVENTS <<< "${{ inputs.EVENTS }}"

@@ -13,6 +13,7 @@ jobs:
           REPO: "cyberskill-world/template-fe-vite-react"
           EVENTS: |
             📈 CI - Update
+
       - name: Template Frontend NextJS
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
@@ -20,6 +21,7 @@ jobs:
           REPO: "cyberskill-world/template-fe-nextjs"
           EVENTS: |
             📈 CI - Update
+
       - name: Template Backend NodeJS
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
@@ -27,6 +29,7 @@ jobs:
           REPO: "cyberskill-world/template-be-nodejs"
           EVENTS: |
             📈 CI - Update
+
       - name: Template Backend NestJS
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
@@ -34,6 +37,7 @@ jobs:
           REPO: "cyberskill-world/template-be-nestjs"
           EVENTS: |
             📈 CI - Update
+
       - name: Template Mobile React Native
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
@@ -41,6 +45,7 @@ jobs:
           REPO: "cyberskill-world/template-mobile-react-native"
           EVENTS: |
             📈 CI - Update
+
       - name: Template Mobile Flutter
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
@@ -56,6 +61,7 @@ jobs:
           REPO: "cyberskill-world/cyber-editor"
           EVENTS: |
             📈 CI - Update
+
       - name: Cyber Sheet
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
@@ -63,6 +69,7 @@ jobs:
           REPO: "cyberskill-world/cyber-sheet"
           EVENTS: |
             📈 CI - Update
+
       - name: Landing Page
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
@@ -78,6 +85,7 @@ jobs:
           REPO: "Cnlgaming-com/cnlgaming-be"
           EVENTS: |
             📈 CI - Update
+
       - name: CNLGaming Frontend
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:
@@ -93,6 +101,7 @@ jobs:
           REPO: "cyberskill-world/odhq-be"
           EVENTS: |
             📈 CI - Update
+
       - name: ODHQ Admin
         uses: cyberskill-world/.github/actions/trigger-events@main
         with:

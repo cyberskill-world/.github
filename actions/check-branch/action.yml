@@ -7,7 +7,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: 🚨 Check if branch matches the target branch
+    - name: Check if branch matches the target branch
       shell: bash
       run: |
         if [ "${GITHUB_REF##*/}" != "${{ inputs.BRANCH }}" ]; then

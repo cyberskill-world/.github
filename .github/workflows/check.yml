@@ -1,17 +1,20 @@
-name: 🧪 CI - Check
+name: 🧪 CS - Check
 on:
   workflow_call:
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-      - name: 🔧 Setup Environment and Dependencies
+
+      - name: Setup Environment and Dependencies
         uses: cyberskill-world/.github/actions/env-deps@main
-      - name: 🛠️ Lint & Build
+
+      - name: Lint & Build
         uses: cyberskill-world/.github/actions/lint-build@main
-      - name: 📤 Upload build or dist folder as artifact
+
+      - name: Upload build or dist folder as artifact
         uses: actions/upload-artifact@v4
         with:
           name: BUILD_ARTIFACT

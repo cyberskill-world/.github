@@ -10,28 +10,34 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚨 Check branch
+      - name: Check branch
         uses: cyberskill-world/.github/actions/check-branch@main
         with:
           BRANCH: ${{ inputs.BRANCH }}
-      - name: 📥 Checkout repository
+
+      - name: Checkout repository
         if: env.SHOULD_CONTINUE == 'true'
         uses: actions/checkout@v4
-      - name: 🔧 Setup Environment and Dependencies
+
+      - name: Setup Environment and Dependencies
         if: env.SHOULD_CONTINUE == 'true'
         uses: cyberskill-world/.github/actions/env-deps@main
-      - name: 🔄 Pull latest changes
+
+      - name: Pull latest changes
         if: env.SHOULD_CONTINUE == 'true'
         run: |
           git pull --rebase origin ${{ inputs.BRANCH }}
-      - name: ⚙️ Update Dependencies
+
+      - name: Update Dependencies
         if: env.SHOULD_CONTINUE == 'true'
         run: |
           pnpm run --if-present prepare
-      - name: 🛠️ Lint & Build
+
+      - name: Lint & Build
         if: env.SHOULD_CONTINUE == 'true'
         uses: cyberskill-world/.github/actions/lint-build@main
-      - name: 📝 Commit Changes
+
+      - name: Commit Changes
         if: env.SHOULD_CONTINUE == 'true'
         uses: cyberskill-world/.github/actions/commit-changes@main
         with:

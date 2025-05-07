@@ -13,22 +13,25 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: ⚙️ Set up Git
+    - name: Set up Git
       shell: bash
       run: |
         git config user.name "actions@github.com"
         git config user.email "${GITHUB_ACTOR}"
-    - name: 🔄 Pull latest changes from TO branch
+
+    - name: Pull latest changes from TO branch
       shell: bash
       run: |
         git pull --rebase origin ${{ inputs.TO }}
-    - name: 🔁 Merge FROM branch into TO branch
+
+    - name: Merge FROM branch into TO branch
       shell: bash
       run: |
         git fetch origin ${{ inputs.FROM }}
         git checkout ${{ inputs.TO }}
         git merge origin/${{ inputs.FROM }} --no-ff -m "chore(CI): merge ${{ inputs.FROM }} into ${{ inputs.TO }}"
-    - name: ✍️ Commit and push changes
+
+    - name: Commit and push changes
       uses: cyberskill-world/.github/actions/commit-changes@main
       with:
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
