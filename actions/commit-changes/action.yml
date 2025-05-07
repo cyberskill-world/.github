@@ -4,6 +4,9 @@ inputs:
   GH_TOKEN:
     description: "GitHub token for authentication"
     required: true
+  BRANCH:
+    description: "The branch to commit changes to"
+    required: true
 runs:
   using: "composite"
   steps:
@@ -30,4 +33,4 @@ runs:
       run: |
         git add --all
         git commit -m "chore(CI): update libs"
-        git push
+        git push origin ${{ inputs.BRANCH }}

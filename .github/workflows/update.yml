@@ -44,3 +44,4 @@ jobs:
         uses: cyberskill-world/.github/actions/commit-changes@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          BRANCH: ${{ inputs.BRANCH }}

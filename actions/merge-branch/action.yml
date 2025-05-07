@@ -19,19 +19,16 @@ runs:
         git config user.name "actions@github.com"
         git config user.email "${GITHUB_ACTOR}"
 
-    - name: Pull latest changes from TO branch
-      shell: bash
-      run: |
-        git pull --rebase origin ${{ inputs.TO }}
-
-    - name: Merge FROM branch into TO branch
+    - name: Pull latest changes then merge
       shell: bash
       run: |
         git fetch origin ${{ inputs.FROM }}
         git checkout ${{ inputs.TO }}
+        git pull --rebase origin ${{ inputs.TO }}
         git merge origin/${{ inputs.FROM }} --no-ff -m "chore(CI): merge ${{ inputs.FROM }} into ${{ inputs.TO }}"
 
     - name: Commit and push changes
       uses: cyberskill-world/.github/actions/commit-changes@main
       with:
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
+        BRANCH: ${{ inputs.TO }}
