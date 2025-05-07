@@ -26,12 +26,12 @@ runs:
         git fetch origin ${{ inputs.TO }}
         git checkout ${{ inputs.TO }}
         git pull --rebase origin ${{ inputs.TO }}
-        git merge origin/${{ inputs.FROM }} --no-ff --allow-unrelated-histories -m "chore(CI): merge ${{ inputs.FROM }} into ${{ inputs.TO }}"
+        git rebase origin/${{ inputs.FROM }}
         if git diff --quiet; then
           git push origin ${{ inputs.TO }}
         else
           git checkout --theirs .
           git add .
-          git commit --no-edit
+          git rebase --continue
           git push origin ${{ inputs.TO }}
         fi
