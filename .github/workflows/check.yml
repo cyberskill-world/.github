@@ -3,6 +3,7 @@ on:
   workflow_call:
 jobs:
   check:
+    name: 🧪 CS - Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
