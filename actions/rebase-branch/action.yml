@@ -27,4 +27,11 @@ runs:
         git checkout ${{ inputs.TO }}
         git pull
         git merge origin/${{ inputs.FROM }} --allow-unrelated-histories
-        git push origin ${{ inputs.TO }}
+        if git diff --quiet; then
+          git push origin ${{ inputs.TO }}
+        else
+          git checkout --theirs .
+          git add .
+          git commit --no-edit
+          git push origin ${{ inputs.TO }}
+        fi
