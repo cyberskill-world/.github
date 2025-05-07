@@ -34,3 +34,4 @@ runs:
           git add .
           git commit --no-edit
           git push origin ${{ inputs.TO }}
+        fi
