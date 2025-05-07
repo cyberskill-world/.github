@@ -25,6 +25,7 @@ runs:
         git fetch origin ${{ inputs.FROM }}
         git fetch origin ${{ inputs.TO }}
         git checkout ${{ inputs.TO }}
+        git reset --hard origin/${{ inputs.TO }}
         git pull --rebase origin ${{ inputs.FROM }}
         if git diff --quiet; then
           git push origin ${{ inputs.TO }}
