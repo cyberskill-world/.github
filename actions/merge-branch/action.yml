@@ -1,14 +1,14 @@
-name: 🔀 CS - Rebase Branch
-description: This action rebase the specific branch into the target branch
+name: 🔀 CS - Merge Branch
+description: This action merge the specific branch into the target branch
 inputs:
   GH_TOKEN:
     description: "GitHub token for authentication"
     required: true
   FROM:
-    description: "The branch to rebase from"
+    description: "The branch to merge from"
     required: true
   TO:
-    description: "The branch to rebase into"
+    description: "The branch to merge into"
     required: true
 runs:
   using: "composite"
@@ -26,5 +26,5 @@ runs:
         git fetch origin
         git checkout ${{ inputs.TO }}
         git pull
-        git merge origin/${{ inputs.FROM }} --allow-unrelated-histories --strategy-option theirs 
+        git merge origin/${{ inputs.FROM }} --ff-only --allow-unrelated-histories --strategy-option theirs 
         git push origin ${{ inputs.TO }}
