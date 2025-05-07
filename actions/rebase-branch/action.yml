@@ -25,6 +25,6 @@ runs:
         git fetch origin ${{ inputs.FROM }}
         git fetch origin
         git checkout ${{ inputs.TO }}
-        git pull
-        git merge origin/${{ inputs.FROM }} --allow-unrelated-histories
+        git pull --allow-unrelated-histories
+        git merge origin/${{ inputs.FROM }}
         git push origin ${{ inputs.TO }}
