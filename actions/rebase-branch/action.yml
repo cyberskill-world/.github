@@ -10,10 +10,6 @@ inputs:
   TO:
     description: "The branch to rebase into"
     required: true
-  CHOOSE_STRATEGY:
-    description: "The strategy to use for the rebase"
-    required: false
-    default: "theirs"
 runs:
   using: "composite"
   steps:
@@ -30,5 +26,5 @@ runs:
         git fetch origin ${{ inputs.TO }}
         git checkout ${{ inputs.TO }}
         git reset --hard origin/${{ inputs.TO }}
-        git rebase origin/${{ inputs.FROM }} --strategy-option ${{ inputs.CHOOSE_STRATEGY }} 
+        git rebase --onto origin/${{ inputs.FROM }} origin/${{ inputs.TO }} ${{ inputs.TO }}
         git push origin ${{ inputs.TO }} --force-with-lease
