@@ -1,4 +1,4 @@
-name: 🔀 CI - Merge Branch
+name: 🔀 CS - Merge Branch
 description: This action merges the specific branch into the target branch
 inputs:
   GH_TOKEN:

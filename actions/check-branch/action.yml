@@ -1,4 +1,4 @@
-name: 🔍 CI - Check Branch
+name: 🔍 CS - Check Branch
 description: This action checks if the current branch matches the target branch
 inputs:
   BRANCH:
@@ -12,8 +12,6 @@ runs:
       run: |
         if [ "${GITHUB_REF##*/}" != "${{ inputs.BRANCH }}" ]; then
           echo "Not on '${{ inputs.BRANCH }}' branch. Skipping.";
-          echo "SHOULD_CONTINUE=false" >> $GITHUB_ENV
           exit 0
         fi
         echo "On '${{ inputs.BRANCH }}' branch. Continuing."
-        echo "SHOULD_CONTINUE=true" >> $GITHUB_ENV  # Proceed if the branch matches

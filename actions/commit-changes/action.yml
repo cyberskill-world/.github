@@ -1,4 +1,4 @@
-name: 📝 CI - Commit Changes
+name: 📝 CS - Commit Changes
 description: This action commits changes to the repository
 inputs:
   GH_TOKEN:

@@ -1,4 +1,4 @@
-name: 📈 CI - Update
+name: 📈 CS - Update
 on:
   workflow_call:
     inputs:
@@ -7,38 +7,40 @@ on:
         required: false
         type: string
 jobs:
-  update:
+  check-branch:
+    name: 🔍 Check branch
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Check branch
         uses: cyberskill-world/.github/actions/check-branch@main
         with:
           BRANCH: ${{ inputs.BRANCH }}
-
+  update:
+    name: 🔄 Update
+    needs: check-branch
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout repository
-        if: env.SHOULD_CONTINUE == 'true'
         uses: actions/checkout@v4
 
       - name: Setup Environment and Dependencies
-        if: env.SHOULD_CONTINUE == 'true'
         uses: cyberskill-world/.github/actions/env-deps@main
 
       - name: Pull latest changes
-        if: env.SHOULD_CONTINUE == 'true'
         run: |
           git pull --rebase origin ${{ inputs.BRANCH }}
 
       - name: Update Dependencies
-        if: env.SHOULD_CONTINUE == 'true'
         run: |
           pnpm run --if-present prepare
 
       - name: Lint & Build
-        if: env.SHOULD_CONTINUE == 'true'
         uses: cyberskill-world/.github/actions/lint-build@main
 
       - name: Commit Changes
-        if: env.SHOULD_CONTINUE == 'true'
         uses: cyberskill-world/.github/actions/commit-changes@main
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}

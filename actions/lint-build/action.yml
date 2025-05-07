@@ -1,4 +1,4 @@
-name: 🛠️ CI - Lint & Build
+name: 🛠️ CS - Lint & Build
 description: This action lints and builds the project
 runs:
   using: "composite"

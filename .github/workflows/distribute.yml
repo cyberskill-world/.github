@@ -1,4 +1,4 @@
-name: 🌍 CI - Distribute
+name: 🌍 CS - Distribute
 on:
   workflow_call:
 jobs:
