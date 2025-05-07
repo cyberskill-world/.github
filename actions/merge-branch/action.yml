@@ -27,9 +27,4 @@ runs:
         git checkout ${{ inputs.TO }}
         git pull --rebase origin ${{ inputs.TO }}
         git merge origin/${{ inputs.FROM }} --no-ff --allow-unrelated-histories -m "chore(CI): merge ${{ inputs.FROM }} into ${{ inputs.TO }}"
-
-    - name: Commit and push changes
-      uses: cyberskill-world/.github/actions/commit-changes@main
-      with:
-        GH_TOKEN: ${{ inputs.GH_TOKEN }}
-        BRANCH: ${{ inputs.TO }}
+        git push origin ${{ inputs.TO }}
