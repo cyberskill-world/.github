@@ -23,6 +23,7 @@ runs:
       shell: bash
       run: |
         git fetch origin ${{ inputs.FROM }}
+        git fetch origin ${{ inputs.TO }}
         git checkout ${{ inputs.TO }}
         git pull --rebase origin ${{ inputs.TO }}
         git merge origin/${{ inputs.FROM }} --no-ff -m "chore(CI): merge ${{ inputs.FROM }} into ${{ inputs.TO }}"
