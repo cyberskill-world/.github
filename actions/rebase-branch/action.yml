@@ -27,11 +27,4 @@ runs:
         git checkout ${{ inputs.TO }}
         git reset --hard origin/${{ inputs.TO }}
         git pull --rebase origin ${{ inputs.FROM }}
-        if git diff --quiet; then
-          git push origin ${{ inputs.TO }}
-        else
-          git checkout --theirs .
-          git add .
-          git rebase --continue
-          git push origin ${{ inputs.TO }}
-        fi
+        git push origin ${{ inputs.TO }}
