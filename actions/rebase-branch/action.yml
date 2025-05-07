@@ -25,13 +25,6 @@ runs:
         git checkout ${{ inputs.FROM }}
         git fetch origin
         git checkout ${{ inputs.TO }}
-        git reset --hard origin/${{ inputs.TO }}
+        git pull -X theirs
         git merge origin/${{ inputs.FROM }} --allow-unrelated-histories
-        if git diff --quiet; then
-          git push origin ${{ inputs.TO }}
-        else
-          git checkout --theirs .
-          git add .
-          git commit --no-edit
-          git push origin ${{ inputs.TO }}
-        fi
+        git push origin ${{ inputs.TO }}
