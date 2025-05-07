@@ -4,7 +4,7 @@ on:
     inputs:
       BRANCH:
         description: "Branch to update"
-        required: false
+        required: true
         type: string
 jobs:
   check-branch:

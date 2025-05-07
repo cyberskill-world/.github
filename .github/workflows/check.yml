@@ -1,6 +1,11 @@
 name: 🧪 CS - Check
 on:
   workflow_call:
+    inputs:
+      BUILD_ARTIFACT_NAME:
+        description: "Name of the build artifact"
+        required: false
+        type: string
 jobs:
   check:
     name: 🧪 CS - Check
@@ -16,9 +21,10 @@ jobs:
         uses: cyberskill-world/.github/actions/lint-build@main
 
       - name: Upload build or dist folder as artifact
+        if: ${{ inputs.BUILD_ARTIFACT_NAME != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: BUILD_ARTIFACT
+          name: ${{ inputs.BUILD_ARTIFACT_NAME }}
           path: |
             dist
             build
