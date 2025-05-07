@@ -23,7 +23,6 @@ runs:
       shell: bash
       run: |
         git fetch origin ${{ inputs.FROM }}
-        git fetch origin
         git checkout ${{ inputs.TO }}
         git pull --allow-unrelated-histories
         git merge origin/${{ inputs.FROM }}
