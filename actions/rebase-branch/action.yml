@@ -23,8 +23,8 @@ runs:
       shell: bash
       run: |
         git fetch origin ${{ inputs.FROM }}
-        git fetch origin ${{ inputs.TO }}
+        git fetch origin
         git checkout ${{ inputs.TO }}
-        git reset --hard origin/${{ inputs.TO }}
-        git pull --rebase origin ${{ inputs.FROM }}
+        git pull
+        git merge origin/${{ inputs.FROM }}
         git push origin ${{ inputs.TO }}
