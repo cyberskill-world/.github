@@ -26,6 +26,7 @@ runs:
         git fetch origin ${{ inputs.TO }}
         git checkout ${{ inputs.TO }}
         git pull --rebase origin ${{ inputs.TO }}
+        git push origin ${{ inputs.TO }}
         git merge origin/${{ inputs.FROM }} --no-ff --allow-unrelated-histories -m "chore(CI): merge ${{ inputs.FROM }} into ${{ inputs.TO }}"
         git checkout --theirs .
         git add .
