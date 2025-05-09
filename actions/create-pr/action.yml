@@ -20,6 +20,7 @@ runs:
       uses: peter-evans/create-pull-request@v7
       with:
         token: ${{ inputs.GH_TOKEN }}
+        branch: ${{ inputs.FROM }}
         base: ${{ inputs.TO }}
         title: "chore(CI): sync from ${{ inputs.FROM }} to ${{ inputs.TO }}"
         body: "This PR sync the branch ${{ inputs.TO }} to the latest changes from ${{ inputs.FROM }}."
