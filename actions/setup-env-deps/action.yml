@@ -1,4 +1,4 @@
-name: 🔧 CS - Setup Environment and Dependencies
+name: 🔧 CS - Env & Deps
 description: This action sets up the environment and installs dependencies for the CI pipeline.
 runs:
   using: "composite"

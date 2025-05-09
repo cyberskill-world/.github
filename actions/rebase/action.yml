@@ -1,4 +1,4 @@
-name: 🔀 CS - Rebase Branch
+name: 🔀 CS - Rebase
 description: This action rebase the specific branch into the target branch
 inputs:
   GH_TOKEN:
