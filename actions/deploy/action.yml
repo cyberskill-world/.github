@@ -28,8 +28,8 @@ runs:
         script: |
           eval "$(ssh-agent -s)"
           ssh-add <(echo "${{ inputs.PRIVATE_KEY }}")
-          export PATH="$HOME/.npm-global/bin:$HOME/.local/share/pnpm:$HOME/bin:$PATH"
-          export PNPM_HOME="$HOME/.local/share/pnpm"
+          [ -f ~/.bashrc ] && source ~/.bashrc
+          [ -f ~/.profile ] && source ~/.profile
           cd ${{ inputs.PATH }}
           git pull
           pnpm install --ignore-scripts
