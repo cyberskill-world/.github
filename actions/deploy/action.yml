@@ -28,4 +28,6 @@ runs:
         script: |
           whoami
           cd ${{ inputs.PATH }}
-          ls -la
+          git pull
+          pnpm install --ignore-scripts
+          pnpm build
