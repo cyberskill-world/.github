@@ -26,8 +26,4 @@ runs:
         username: ${{ inputs.USERNAME }}
         key: ${{ inputs.PRIVATE_KEY }}
         script: |
-          cd ${{ inputs.PATH }}
-          git pull
-          pnpm install
-          pnpm build
-          pm2 restart ${{ inputs.NAME }}
+          whoami
