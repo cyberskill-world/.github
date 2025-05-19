@@ -2,7 +2,7 @@ name: 🛠️ CS - Lint & Build
 description: This action lints and builds the project
 inputs:
   BUILD_ARTIFACT_NAME:
-    description: "Name of the build artifact"
+    description: Name of the build artifact
     required: false
 runs:
   using: "composite"

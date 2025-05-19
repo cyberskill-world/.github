@@ -2,13 +2,13 @@ name: 🔀 CS - Rebase
 description: This action rebase the specific branch into the target branch
 inputs:
   GH_TOKEN:
-    description: "GitHub token for authentication"
+    description: GitHub token for authentication
     required: true
   FROM:
-    description: "The branch to rebase from"
+    description: The branch to rebase from
     required: true
   TO:
-    description: "The branch to rebase into"
+    description: The branch to rebase into
     required: true
 runs:
   using: "composite"

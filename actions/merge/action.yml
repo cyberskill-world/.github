@@ -2,16 +2,16 @@ name: 🔀 CS - Merge
 description: This action merge the specific branch into the target branch
 inputs:
   GH_TOKEN:
-    description: "GitHub token for authentication"
+    description: GitHub token for authentication
     required: true
   FROM:
-    description: "The branch to merge from"
+    description: The branch to merge from
     required: true
   TO:
-    description: "The branch to merge into"
+    description: The branch to merge into
     required: true
   CHOOSE_STRATEGY:
-    description: "The strategy to use for the merge"
+    description: The strategy to use for the merge
     required: false
     default: "theirs"
 runs:

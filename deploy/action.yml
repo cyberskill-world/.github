@@ -1,0 +1,30 @@
+name: 🚀 CI - Deploy
+description: This action deploys the project to a server using SSH and restarts the PM2 app.
+inputs:
+  HOST:
+    description: The host of the server to deploy to
+    required: true
+  USERNAME:
+    description: The username to connect to the server
+    required: true
+  PRIVATE_KEY:
+    description: The private key to connect to the server
+    required: true
+  NAME:
+    description: The name of the project to deploy
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Deploy to server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ inputs.HOST }}
+        username: ${{ inputs.USERNAME }}
+        key: ${{ inputs.PRIVATE_KEY }}
+        script: |
+          cd /home/${{ inputs.NAME }}
+          git pull
+          pnpm install
+          pnpm build
+          pm2 restart ${{ inputs.NAME }}

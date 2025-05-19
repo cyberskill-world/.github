@@ -2,13 +2,13 @@ name: 🔥 CS - Trigger Events
 description: This action triggers multiple events for a single repository
 inputs:
   GH_TOKEN:
-    description: "GitHub token for authentication"
+    description: GitHub token for authentication
     required: true
   REPO:
-    description: "Repository to trigger events for"
+    description: Repository to trigger events for
     required: true
   EVENTS:
-    description: "Comma-separated list of event types to trigger (supporting spaces and icons)"
+    description: Comma-separated list of event types to trigger (supporting spaces and icons)
     required: true
 runs:
   using: "composite"

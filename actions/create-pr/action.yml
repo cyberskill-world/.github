@@ -2,13 +2,13 @@ name: 📜 CS - Create PR
 description: This action creates a pull request from the source branch to the target branch
 inputs:
   GH_TOKEN:
-    description: "GitHub token for authentication"
+    description: GitHub token for authentication
     required: true
   FROM:
-    description: "The source branch"
+    description: The source branch
     required: true
   TO:
-    description: "The target branch"
+    description: The target branch
     required: true
 runs:
   using: "composite"
