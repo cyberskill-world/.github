@@ -1,4 +1,4 @@
-name: 🚀 CI - Deploy
+name: 🚀 CS - Deploy
 description: This action deploys the project to a server using SSH and restarts the PM2 app.
 inputs:
   HOST:
