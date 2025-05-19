@@ -28,9 +28,6 @@ runs:
         script: |
           eval "$(ssh-agent -s)"
           ssh-add <(echo "${{ inputs.PRIVATE_KEY }}")
-          [ -f ~/.bashrc ] && source ~/.bashrc
-          [ -f ~/.profile ] && source ~/.profile
-          [ -f ~/.nvm/nvm.sh ] && source ~/.nvm/nvm.sh || true
           export PATH="$HOME/.npm-global/bin:$HOME/.local/share/pnpm:$HOME/bin:$PATH"
           export PNPM_HOME="$HOME/.local/share/pnpm"
           cd ${{ inputs.PATH }}
