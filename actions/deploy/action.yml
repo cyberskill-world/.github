@@ -28,8 +28,12 @@ runs:
         script: |
           eval "$(ssh-agent -s)"
           ssh-add <(echo "${{ inputs.PRIVATE_KEY }}")
-          [ -f ~/.bashrc ] && source ~/.bashrc
+          if [ -n "$BASH_VERSION" ]; then
+            [ -f ~/.bash_profile ] && source ~/.bash_profile
+            [ -f ~/.bashrc ] && source ~/.bashrc
+          fi
           [ -f ~/.profile ] && source ~/.profile
+          [ -f ~/.nvm/nvm.sh ] && source ~/.nvm/nvm.sh || true
           cd ${{ inputs.PATH }}
           git pull
           pnpm install --ignore-scripts
