@@ -27,3 +27,5 @@ runs:
         key: ${{ inputs.PRIVATE_KEY }}
         script: |
           whoami
+          cd ${{ inputs.PATH }}
+          ls -la
