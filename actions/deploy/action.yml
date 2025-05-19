@@ -13,6 +13,9 @@ inputs:
   PATH:
     description: The path to the project on the server
     required: true
+  BRANCH:
+    description: The branch to deploy from
+    required: true
   NAME:
     description: The name of the project to deploy
     required: true
@@ -35,6 +38,8 @@ runs:
           [ -f ~/.profile ] && source ~/.profile
           [ -f ~/.nvm/nvm.sh ] && source ~/.nvm/nvm.sh || true
           cd ${{ inputs.PATH }}
-          git pull
+          git fetch --all
+          git checkout ${{ inputs.BRANCH }}
+          git pull origin ${{ inputs.BRANCH }}
           pnpm install --ignore-scripts
           pnpm build
