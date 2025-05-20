@@ -26,8 +26,8 @@ assignees:
 - Browser / Version: <!-- e.g. Chrome 90, Firefox 88 -->
 - Dependencies / Tools: <!-- e.g. Node.js v14, Python 3.8 -->
 
-## Screenshots (if applicable)
-<!-- A picture is worth a thousand words — show us what's wrong! -->
+## Screenshots or Videos (if applicable)
+<!-- A picture/video is worth a thousand words — show us what's wrong! -->
 
 ## Additional Context
 <!-- Anything else you want to share? The more details, the better! -->
