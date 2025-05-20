@@ -2,7 +2,7 @@
 name: Feature Request ✨
 about: Suggest a shiny new feature or improvement
 title: "[FEATURE] - "
-labels: feature
+labels: [feature]
 assignees: 
 ---
 
