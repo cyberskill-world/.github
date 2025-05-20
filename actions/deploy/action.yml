@@ -43,3 +43,4 @@ runs:
           git pull origin ${{ inputs.BRANCH }}
           pnpm install --ignore-scripts
           pnpm build
+          pm2 restart ${{ inputs.NAME }}
