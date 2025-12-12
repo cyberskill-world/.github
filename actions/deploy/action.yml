@@ -18,9 +18,9 @@ inputs:
   KEY:
     description: The private key to connect to the server
     required: true
-  PASSPHRASE:
-    description: The passphrase for the private key
-    required: false
+  # PASSPHRASE:
+  #   description: The passphrase for the private key
+  #   required: false
   PATH:
     description: The path to the project on the server
     required: true
@@ -38,7 +38,7 @@ runs:
         username: ${{ inputs.USERNAME }}
         password: ${{ inputs.PASSWORD }}
         key: ${{ inputs.KEY }}
-        passphrase: ${{ inputs.PASSPHRASE }}
+        # passphrase: ${{ inputs.PASSPHRASE }}
         script: |
           set -e
           if [ -f ~/.profile ]; then source ~/.profile; fi
