@@ -4,36 +4,61 @@ inputs:
   HOST:
     description: The host of the server to deploy to
     required: true
+  PORT:
+    description: The port to connect to the server
+    required: true
+    default: 22
   USERNAME:
     description: The username to connect to the server
     required: true
-  PRIVATE_KEY:
+  PASSWORD:
+    description: The password to connect to the server
+    required: false
+  KEY:
     description: The private key to connect to the server
     required: true
+  PASSPHRASE:
+    description: The passphrase for the private key
+    required: false
   PATH:
     description: The path to the project on the server
     required: true
   BRANCH:
     description: The branch to deploy from
     required: true
-  NAME:
-    description: The name of the project to deploy
-    required: true
 runs:
   using: "composite"
   steps:
     - name: Deploy to server
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@v1.2.4
       with:
         host: ${{ inputs.HOST }}
+        port: ${{ inputs.PORT }}
         username: ${{ inputs.USERNAME }}
-        key: ${{ inputs.PRIVATE_KEY }}
+        password: ${{ inputs.PASSWORD }}
+        key: ${{ inputs.KEY }}
+        passphrase: ${{ inputs.PASSPHRASE }}
         script: |
+          set -e
           if [ -f ~/.profile ]; then source ~/.profile; fi
           if [ -f ~/.nvm/nvm.sh ]; then source ~/.nvm/nvm.sh; fi || true
-          cd ${{ inputs.PATH }} || exit 1
-          git checkout ${{ inputs.BRANCH }} || exit 1
-          git pull origin ${{ inputs.BRANCH }} || exit 1
-          pnpm install --ignore-scripts || exit 1
-          pnpm build || exit 1
-          pm2 restart ${{ inputs.NAME }} || exit 1
+          
+          echo "🚀 Deploying to ${{ inputs.PATH }}..."
+          cd ${{ inputs.PATH }}
+          
+          echo "⬇️ Fetching latest changes..."
+          git fetch origin
+          git checkout ${{ inputs.BRANCH }}
+          git pull origin ${{ inputs.BRANCH }}
+          
+          echo "📦 Installing dependencies..."
+          pnpm install --frozen-lockfile
+          
+          echo "🏗️ Building project..."
+          pnpm build
+          
+          echo "🔄 Reloading application..."
+          pm2 startOrReload ecosystem.config.cjs --update-env
+          pm2 save
+          
+          echo "✅ Deployment successful!"
