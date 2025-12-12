@@ -1,4 +1,9 @@
 ---
+ignore: |
+  .git/
+  node_modules/
+  pnpm-lock.yaml
+
 extends: default
 
 rules:

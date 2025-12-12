@@ -8,6 +8,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Lint YAML
+      uses: ./.github/actions/lint-yaml
+
     - name: Run lint
       shell: bash
       run: pnpm run --if-present lint
