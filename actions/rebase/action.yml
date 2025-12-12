@@ -23,7 +23,6 @@ runs:
     - name: Pull latest changes then rebase
       shell: bash
       run: |
-        # Ensure remote exists
         git fetch origin ${{ inputs.FROM }} || { echo "❌ Branch ${{ inputs.FROM }} not found"; exit 1; }
         git fetch origin ${{ inputs.TO }}
         git checkout ${{ inputs.TO }}

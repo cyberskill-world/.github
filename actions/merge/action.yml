@@ -27,7 +27,6 @@ runs:
     - name: Pull latest changes then merge
       shell: bash
       run: |
-        # Ensure remote exists and fetch
         git fetch origin ${{ inputs.FROM }} || { echo "❌ Branch ${{ inputs.FROM }} not found on remote"; exit 1; }
         git fetch origin ${{ inputs.TO }}
 
