@@ -9,11 +9,11 @@ on:
 
 jobs:
   validate:
-    name: Validate YAML & Actions
+    name: Validate YAML
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.1
 
       - name: Lint YAML
-        uses: ./actions/lint-yaml
+        uses: cyberskill-world/.github/actions/lint-yaml@main
