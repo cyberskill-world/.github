@@ -21,7 +21,7 @@ runs:
 
     - name: Upload build or dist folder as artifact
       if: ${{ inputs.BUILD_ARTIFACT_NAME != '' }}
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
       with:
         name: ${{ inputs.BUILD_ARTIFACT_NAME }}
         path: |
