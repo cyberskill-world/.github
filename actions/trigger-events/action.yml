@@ -16,7 +16,7 @@ runs:
     - name: Trigger events in the repository
       shell: bash
       run: |
-        IFS='\n' read -ra EVENTS <<< "${{ inputs.EVENTS }}"
+        IFS=',' read -ra EVENTS <<< "${{ inputs.EVENTS }}"
         for event in "${EVENTS[@]}"; do
           event_trimmed=$(echo "$event" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
           curl -X POST \

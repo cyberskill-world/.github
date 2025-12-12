@@ -10,15 +10,24 @@ inputs:
   TO:
     description: The target branch
     required: true
+  TITLE:
+    description: Pull Request Title
+    required: false
+    default: "chore(CI): sync changes"
+  BODY:
+    description: Pull Request Body
+    required: false
+    default: "This PR syncs the latest changes."
 runs:
   using: "composite"
   steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v6.0.1
 
     - name: Create Pull Request
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
       run: |
-        gh pr create --base ${{ inputs.TO }} --head ${{ inputs.FROM }} --title "chore(CI): sync from ${{ inputs.FROM }} to ${{ inputs.TO }}" --body "This PR sync the branch ${{ inputs.TO }} to the latest changes from ${{ inputs.FROM }}."
+      run: |
+        gh pr create --base ${{ inputs.TO }} --head ${{ inputs.FROM }} --title "${{ inputs.TITLE }}" --body "${{ inputs.BODY }}"

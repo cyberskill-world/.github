@@ -16,13 +16,14 @@ runs:
     - name: Set up Git
       shell: bash
       run: |
-        git config user.name "actions@github.com"
-        git config user.email "${GITHUB_ACTOR}"
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
     - name: Pull latest changes then rebase
       shell: bash
       run: |
-        git fetch origin ${{ inputs.FROM }}
+        # Ensure remote exists
+        git fetch origin ${{ inputs.FROM }} || { echo "❌ Branch ${{ inputs.FROM }} not found"; exit 1; }
         git fetch origin ${{ inputs.TO }}
         git checkout ${{ inputs.TO }}
         git reset --hard origin/${{ inputs.TO }}

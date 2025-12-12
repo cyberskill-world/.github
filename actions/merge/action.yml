@@ -20,15 +20,19 @@ runs:
     - name: Set up Git
       shell: bash
       run: |
-        git config user.name "actions@github.com"
-        git config user.email "${GITHUB_ACTOR}"
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
     - name: Pull latest changes then merge
       shell: bash
       run: |
+        # Ensure remote exists and fetch
+        git fetch origin ${{ inputs.FROM }} || { echo "❌ Branch ${{ inputs.FROM }} not found on remote"; exit 1; }
+        git fetch origin ${{ inputs.TO }}
+        
         git checkout ${{ inputs.FROM }}
-        git fetch origin
         git checkout ${{ inputs.TO }}
-        git pull
+        git pull origin ${{ inputs.TO }}
+        
         git merge origin/${{ inputs.FROM }} --allow-unrelated-histories --strategy-option ${{ inputs.CHOOSE_STRATEGY }}
         git push origin ${{ inputs.TO }}

@@ -1,3 +1,13 @@
 {
-    "$schema": "https://unpkg.com/@cyberskill/shared@latest/public/renovate.base.json"
+    "timezone": "Asia/Ho_Chi_Minh",
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:best-practices",
+        "group:allApollographql",
+        "group:allDigest",
+        "group:allNonMajor"
+    ],
+    "ignoreDeps": [
+        "node"
+    ]
 }
