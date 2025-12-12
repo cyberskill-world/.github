@@ -1,3 +1,4 @@
+---
 name: 🛠️ CS - Lint & Build
 description: This action lints and builds the project
 inputs:

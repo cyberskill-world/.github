@@ -1,3 +1,4 @@
+---
 name: 🚀 CS - Deploy
 description: This action deploys the project to a server using SSH and restarts the PM2 app.
 inputs:
@@ -42,23 +43,23 @@ runs:
           set -e
           if [ -f ~/.profile ]; then source ~/.profile; fi
           if [ -f ~/.nvm/nvm.sh ]; then source ~/.nvm/nvm.sh; fi || true
-          
+
           echo "🚀 Deploying to ${{ inputs.PATH }}..."
           cd ${{ inputs.PATH }}
-          
+
           echo "⬇️ Fetching latest changes..."
           git fetch origin
           git checkout ${{ inputs.BRANCH }}
           git pull origin ${{ inputs.BRANCH }}
-          
+
           echo "📦 Installing dependencies..."
           pnpm install --frozen-lockfile
-          
+
           echo "🏗️ Building project..."
           pnpm build
-          
+
           echo "🔄 Reloading application..."
           pm2 startOrReload ecosystem.config.cjs --update-env
           pm2 save
-          
+
           echo "✅ Deployment successful!"

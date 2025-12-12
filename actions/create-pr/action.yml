@@ -1,3 +1,4 @@
+---
 name: 📜 CS - Create PR
 description: This action creates a pull request from the source branch to the target branch
 inputs:
@@ -29,5 +30,8 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
       run: |
-      run: |
-        gh pr create --base ${{ inputs.TO }} --head ${{ inputs.FROM }} --title "${{ inputs.TITLE }}" --body "${{ inputs.BODY }}"
+        gh pr create \
+          --base ${{ inputs.TO }} \
+          --head ${{ inputs.FROM }} \
+          --title "${{ inputs.TITLE }}" \
+          --body "${{ inputs.BODY }}"

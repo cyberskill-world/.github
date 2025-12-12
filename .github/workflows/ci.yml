@@ -1,3 +1,4 @@
+---
 name: CI - Validate Actions
 
 on:
@@ -17,7 +18,7 @@ jobs:
       - name: JSON/YAML Validator
         uses: actions/setup-python@v6.1.0
         with:
-            python-version: '3.14.2'
+          python-version: '3.14.2'
 
       - name: Install dependencies
         run: pip install yamllint

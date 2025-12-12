@@ -1,3 +1,4 @@
+---
 name: 🔀 CS - Merge
 description: This action merge the specific branch into the target branch
 inputs:
@@ -29,10 +30,10 @@ runs:
         # Ensure remote exists and fetch
         git fetch origin ${{ inputs.FROM }} || { echo "❌ Branch ${{ inputs.FROM }} not found on remote"; exit 1; }
         git fetch origin ${{ inputs.TO }}
-        
+
         git checkout ${{ inputs.FROM }}
         git checkout ${{ inputs.TO }}
         git pull origin ${{ inputs.TO }}
-        
+
         git merge origin/${{ inputs.FROM }} --allow-unrelated-histories --strategy-option ${{ inputs.CHOOSE_STRATEGY }}
         git push origin ${{ inputs.TO }}
