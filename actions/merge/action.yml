@@ -18,21 +18,23 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Set up Git
+    - name: Set up Git & Auth
       shell: bash
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin https://x-access-token:${{ inputs.GH_TOKEN }}@github.com/${{ github.repository }}
 
-    - name: Pull latest changes then merge
+    - name: Merge and Push
       shell: bash
       run: |
-        git fetch origin ${{ inputs.FROM }} || { echo "❌ Branch ${{ inputs.FROM }} not found on remote"; exit 1; }
-        git fetch origin ${{ inputs.TO }}
+        git fetch origin ${{ inputs.FROM }} || { echo "❌ Branch ${{ inputs.FROM }} not found"; exit 1; }
+        git fetch origin ${{ inputs.TO }} || { echo "❌ Branch ${{ inputs.TO }} not found"; exit 1; }
 
-        git checkout ${{ inputs.FROM }}
         git checkout ${{ inputs.TO }}
-        git pull origin ${{ inputs.TO }}
+        git reset --hard origin/${{ inputs.TO }}
 
-        git merge origin/${{ inputs.FROM }} --allow-unrelated-histories --strategy-option ${{ inputs.CHOOSE_STRATEGY }}
+        echo "Merging ${{ inputs.FROM }} into ${{ inputs.TO }} with strategy: ${{ inputs.CHOOSE_STRATEGY }}"
+        git merge origin/${{ inputs.FROM }} --allow-unrelated-histories -X ${{ inputs.CHOOSE_STRATEGY }} -m "Merge ${{ inputs.FROM }} into ${{ inputs.TO }}"
+
         git push origin ${{ inputs.TO }}

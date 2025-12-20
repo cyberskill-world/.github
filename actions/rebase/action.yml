@@ -24,8 +24,8 @@ runs:
     - name: Rebase and Push
       shell: bash
       run: |
-        git fetch origin ${{ inputs.FROM }}
-        git fetch origin ${{ inputs.TO }}
+        git fetch origin ${{ inputs.FROM }} || { echo "❌ Branch ${{ inputs.FROM }} not found"; exit 1; }
+        git fetch origin ${{ inputs.TO }} || { echo "❌ Branch ${{ inputs.TO }} not found"; exit 1; }
 
         git checkout ${{ inputs.TO }}
         git reset --hard origin/${{ inputs.TO }}
