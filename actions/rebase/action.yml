@@ -16,6 +16,8 @@ runs:
   steps:
     - name: Set up Git
       shell: bash
+      permissions:
+        contents: write
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
