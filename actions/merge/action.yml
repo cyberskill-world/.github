@@ -17,8 +17,6 @@ inputs:
     default: "theirs"
 runs:
   using: "composite"
-  permissions:
-    contents: write
   steps:
     - name: Set up Git
       shell: bash

@@ -13,21 +13,23 @@ inputs:
     required: true
 runs:
   using: "composite"
-  permissions:
-    contents: write
   steps:
-    - name: Set up Git
+    - name: Set up Git & Auth
       shell: bash
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin https://x-access-token:${{ inputs.GH_TOKEN }}@github.com/${{ github.repository }}
 
-    - name: Pull latest changes then rebase
+    - name: Rebase and Push
       shell: bash
       run: |
-        git fetch origin ${{ inputs.FROM }} || { echo "❌ Branch ${{ inputs.FROM }} not found"; exit 1; }
+        git fetch origin ${{ inputs.FROM }}
         git fetch origin ${{ inputs.TO }}
+
         git checkout ${{ inputs.TO }}
         git reset --hard origin/${{ inputs.TO }}
-        git rebase --onto origin/${{ inputs.FROM }} origin/${{ inputs.TO }} ${{ inputs.TO }}
+
+        git rebase origin/${{ inputs.FROM }}
+
         git push origin ${{ inputs.TO }} --force-with-lease
