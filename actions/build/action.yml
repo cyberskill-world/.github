@@ -1,6 +1,6 @@
 ---
-name: 🛠️ CS - Lint & Build
-description: This action lints and builds the project
+name: 🛠️ CS - Build
+description: This action builds the project
 inputs:
   BUILD_ARTIFACT_NAME:
     description: Name of the build artifact
@@ -8,13 +8,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Lint YAML
-      uses: cyberskill-world/.github/actions/lint-yaml@main
-
-    - name: Run lint
-      shell: bash
-      run: pnpm run --if-present lint
-
     - name: Build project
       shell: bash
       run: pnpm run --if-present build

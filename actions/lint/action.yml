@@ -1,0 +1,12 @@
+---
+name: 🛠️ CS - Lint
+description: This action lints the project
+runs:
+  using: "composite"
+  steps:
+    - name: Lint YAML
+      uses: cyberskill-world/.github/actions/lint-yaml@main
+
+    - name: Run lint
+      shell: bash
+      run: pnpm run --if-present lint

@@ -1,5 +1,5 @@
 ---
-name: "Lint YAML"
+name: "🛠️ CS - Lint YAML"
 description: "Lints YAML files using yamllint"
 runs:
   using: "composite"
