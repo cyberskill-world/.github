@@ -29,9 +29,13 @@ runs:
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
+        PR_BASE: ${{ inputs.TO }}
+        PR_HEAD: ${{ inputs.FROM }}
+        PR_TITLE: ${{ inputs.TITLE }}
+        PR_BODY: ${{ inputs.BODY }}
       run: |
         gh pr create \
-          --base ${{ inputs.TO }} \
-          --head ${{ inputs.FROM }} \
-          --title "${{ inputs.TITLE }}" \
-          --body "${{ inputs.BODY }}"
+          --base "$PR_BASE" \
+          --head "$PR_HEAD" \
+          --title "$PR_TITLE" \
+          --body "$PR_BODY"
