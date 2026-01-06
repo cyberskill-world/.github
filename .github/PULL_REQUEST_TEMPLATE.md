@@ -1,3 +1,5 @@
+# Pull Request
+
 ## Description
 
 <!-- What and why: Describe your changes and the motivation behind them -->
@@ -8,8 +10,8 @@
 <!-- Link to the issue this PR addresses (if any). -->
 <!-- Psst... linking issues helps us all stay sane. If this’s a new feature or bug fix, please create an issue first — teamwork makes the dream work! -->
 
-- Resolve cyberskill-world/project-pm#<issue_number>
-- Fix cyberskill-world/project-pm#<issue_number>
+- Resolve cyberskill-world/shared#<issue_number>
+- Fix cyberskill-world/shared#<issue_number>
 
 ## Type of Change
 
@@ -21,6 +23,23 @@
 - [ ] Refactor (tidying up the code closet without changing behavior 🧹)
 - [ ] Documentation (making our life easier for future humans 📚)
 - [ ] Other (please describe):
+
+## ⚠️ Breaking Changes
+
+<!-- Will this change break the existing universe? -->
+<!-- If yes, please list what is breaking and what needs to be changed in the consuming applications. -->
+
+- [ ] No breaking changes (smooth sailing ⛵)
+- [ ] Yes (please describe below, and brace for impact 💥)
+
+## 🚀 Deployment & Ops
+
+<!-- Do we need to do anything special to deploy this? -->
+
+- [ ] New environment variables required (don't keep secrets to yourself 🤫)
+- [ ] Database migrations (shifting the tectonic plates 🌍)
+- [ ] Configuration changes (turning the knobs 🎛️)
+- [ ] None (just standard procedure)
 
 ## Testing
 
@@ -34,9 +53,19 @@
 
 <!-- OS, tools, dependencies, or any other wizardry -->
 
+## 🛡️ Security & Performance
+
+- [ ] I have checked for security vulnerabilities (no open doors 🚪)
+- [ ] I have verified performance impacts (no heavy lifting 🏋️)
+
 ## Screenshots (if applicable)
 
 <!-- A picture is worth a thousand words — show off your handiwork! 📸 -->
+<!-- Use Before/After comparisons if changing UI -->
+
+| Before  | After   |
+| ------- | ------- |
+| _Image_ | _Image_ |
 
 ## Checklist:
 
