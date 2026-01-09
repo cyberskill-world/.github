@@ -32,6 +32,9 @@ runs:
   steps:
     - name: Deploy to server
       uses: appleboy/ssh-action@823bd89e131d8d508129f9443cad5855e9ba96f0  # v1.2.4
+      env:
+        DEPLOY_PATH: ${{ inputs.PATH }}
+        DEPLOY_BRANCH: ${{ inputs.BRANCH }}
       with:
         host: ${{ inputs.HOST }}
         port: ${{ inputs.PORT }}
@@ -39,18 +42,19 @@ runs:
         password: ${{ inputs.PASSWORD }}
         key: ${{ inputs.KEY }}
         passphrase: ${{ inputs.PASSPHRASE }}
+        envs: DEPLOY_PATH,DEPLOY_BRANCH
         script: |
           set -e
           if [ -f ~/.profile ]; then source ~/.profile; fi
           if [ -f ~/.nvm/nvm.sh ]; then source ~/.nvm/nvm.sh; fi || true
 
-          echo "🚀 Deploying to ${{ inputs.PATH }}..."
-          cd ${{ inputs.PATH }}
+          echo "🚀 Deploying to $DEPLOY_PATH..."
+          cd "$DEPLOY_PATH"
 
           echo "⬇️ Fetching latest changes..."
           git fetch origin
-          git checkout ${{ inputs.BRANCH }}
-          git pull origin ${{ inputs.BRANCH }}
+          git checkout "$DEPLOY_BRANCH"
+          git pull origin "$DEPLOY_BRANCH"
 
           echo "📦 Installing dependencies..."
           pnpm install --frozen-lockfile
