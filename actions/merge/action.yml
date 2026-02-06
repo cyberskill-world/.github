@@ -20,21 +20,27 @@ runs:
   steps:
     - name: Set up Git & Auth
       shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.GH_TOKEN }}
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git remote set-url origin https://x-access-token:${{ inputs.GH_TOKEN }}@github.com/${{ github.repository }}
+        git remote set-url origin "https://x-access-token:$GH_TOKEN@github.com/${{ github.repository }}"
 
     - name: Merge and Push
       shell: bash
+      env:
+        FROM_BRANCH: ${{ inputs.FROM }}
+        TO_BRANCH: ${{ inputs.TO }}
+        STRATEGY: ${{ inputs.CHOOSE_STRATEGY }}
       run: |
-        git fetch origin ${{ inputs.FROM }} || { echo "❌ Branch ${{ inputs.FROM }} not found"; exit 1; }
-        git fetch origin ${{ inputs.TO }} || { echo "❌ Branch ${{ inputs.TO }} not found"; exit 1; }
+        git fetch origin "$FROM_BRANCH" || { echo "❌ Branch $FROM_BRANCH not found"; exit 1; }
+        git fetch origin "$TO_BRANCH" || { echo "❌ Branch $TO_BRANCH not found"; exit 1; }
 
-        git checkout ${{ inputs.TO }}
-        git reset --hard origin/${{ inputs.TO }}
+        git checkout "$TO_BRANCH"
+        git reset --hard "origin/$TO_BRANCH"
 
-        echo "Merging ${{ inputs.FROM }} into ${{ inputs.TO }} with strategy: ${{ inputs.CHOOSE_STRATEGY }}"
-        git merge origin/${{ inputs.FROM }} --allow-unrelated-histories -X ${{ inputs.CHOOSE_STRATEGY }} -m "Merge ${{ inputs.FROM }} into ${{ inputs.TO }}"
+        echo "Merging $FROM_BRANCH into $TO_BRANCH with strategy: $STRATEGY"
+        git merge "origin/$FROM_BRANCH" --allow-unrelated-histories -X "$STRATEGY" -m "Merge $FROM_BRANCH into $TO_BRANCH"
 
-        git push origin ${{ inputs.TO }}
+        git push origin "$TO_BRANCH"
