@@ -12,17 +12,11 @@ runs:
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
       with:
         python-version: '3.14.3'
-        # ⚡ Bolt: Cache pip dependencies for faster builds
         cache: 'pip'
-        cache-dependency-path: .lint-yaml-requirements.txt
+        cache-dependency-path: '${{ github.action_path }}/requirements.txt'
 
     - name: Install dependencies
-      run: pip install -r .lint-yaml-requirements.txt
-      shell: bash
-
-    - name: Cleanup dependencies
-      if: always()
-      run: rm -f .lint-yaml-requirements.txt
+      run: pip install -r "${{ github.action_path }}/requirements.txt"
       shell: bash
 
     - name: Lint YAML files
