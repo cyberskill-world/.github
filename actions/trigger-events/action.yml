@@ -16,12 +16,66 @@ runs:
   steps:
     - name: Trigger events in the repository
       shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.GH_TOKEN }}
+        REPO: ${{ inputs.REPO }}
+        EVENTS: ${{ inputs.EVENTS }}
       run: |
-        IFS=',' read -ra EVENTS <<< "${{ inputs.EVENTS }}"
-        for event in "${EVENTS[@]}"; do
+        # Configuration
+        MAX_JOBS=10
+        STATUS_DIR=$(mktemp -d)
+
+        # Function to process a single event
+        trigger_event() {
+          local event="$1"
+          # Trim whitespace
+          local event_trimmed
           event_trimmed=$(echo "$event" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-          curl -X POST \
-          -H "Authorization: token ${{ inputs.GH_TOKEN }}" \
-          -d "{\"event_type\": \"$event_trimmed\"}" \
-          https://api.github.com/repos/${{ inputs.REPO }}/dispatches
+
+          if [[ -z "$event_trimmed" ]]; then
+            return
+          fi
+
+          echo "Triggering event: $event_trimmed"
+
+          # Perform the request
+          http_code=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "Authorization: token $GH_TOKEN" \
+            -d "{\"event_type\": \"$event_trimmed\"}" \
+            "https://api.github.com/repos/$REPO/dispatches")
+
+          if [[ "$http_code" -ge 200 && "$http_code" -lt 300 ]]; then
+            echo "Finished event: $event_trimmed (Status: $http_code)"
+          else
+            echo "Failed event: $event_trimmed (Status: $http_code)"
+            touch "$STATUS_DIR/$event_trimmed.failed"
+          fi
+        }
+
+        # Parse events
+        IFS=',' read -ra EVENT_LIST <<< "$EVENTS"
+
+        echo "Starting to trigger ${#EVENT_LIST[@]} events with max concurrency $MAX_JOBS..."
+
+        for event in "${EVENT_LIST[@]}"; do
+          # Concurrency control: wait if we hit the limit
+          while (( $(jobs -r | wc -l) >= MAX_JOBS )); do
+            wait -n
+          done
+
+          trigger_event "$event" &
         done
+
+        # Wait for all background jobs to finish
+        wait
+
+        # Check for failures
+        failures=$(ls "$STATUS_DIR"/*.failed 2>/dev/null | xargs -n 1 basename -s .failed || true)
+        rm -rf "$STATUS_DIR"
+
+        if [[ -n "$failures" ]]; then
+          echo "::error::The following events failed to trigger: $failures"
+          exit 1
+        else
+          echo "All events triggered successfully."
+        fi
