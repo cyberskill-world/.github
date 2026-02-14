@@ -34,6 +34,30 @@ runs:
         TO_BRANCH: ${{ inputs.TO }}
         STRATEGY: ${{ inputs.CHOOSE_STRATEGY }}
       run: |
+        set -euo pipefail
+
+        validate_branch() {
+          local name="$1"
+          local value="$2"
+
+          # Reject obvious refspecs or full refs
+          if [[ "$value" == *:* ]]; then
+            echo "❌ Invalid branch name for $name: must not contain ':' (refspecs are not allowed)" >&2
+            exit 1
+          fi
+          if [[ "$value" == refs/* ]]; then
+            echo "❌ Invalid branch name for $name: must not start with 'refs/'" >&2
+            exit 1
+          fi
+
+          if ! git check-ref-format --branch "$value" > /dev/null 2>&1; then
+            echo "❌ Invalid branch name for $name: '$value' is not a valid Git branch" >&2
+            exit 1
+          fi
+        }
+
+        validate_branch "FROM" "$FROM_BRANCH"
+        validate_branch "TO" "$TO_BRANCH"
         git fetch origin "$FROM_BRANCH" || { echo "❌ Branch $FROM_BRANCH not found"; exit 1; }
         git fetch origin "$TO_BRANCH" || { echo "❌ Branch $TO_BRANCH not found"; exit 1; }
 
