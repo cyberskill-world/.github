@@ -29,6 +29,31 @@ runs:
         FROM: ${{ inputs.FROM }}
         TO: ${{ inputs.TO }}
       run: |
+        validate_branch() {
+          local name="$1"
+          local value="$2"
+
+          if [[ "$value" == -* ]]; then
+            echo "❌ Invalid branch name for $name: must not start with '-'" >&2
+            exit 1
+          fi
+          if [[ "$value" == *:* ]]; then
+            echo "❌ Invalid branch name for $name: must not contain ':'" >&2
+            exit 1
+          fi
+          if [[ "$value" == refs/* ]]; then
+            echo "❌ Invalid branch name for $name: must not start with 'refs/'" >&2
+            exit 1
+          fi
+          if ! git check-ref-format --branch "$value" > /dev/null 2>&1; then
+            echo "❌ Invalid branch name for $name: '$value' is not a valid Git branch" >&2
+            exit 1
+          fi
+        }
+
+        validate_branch "FROM" "$FROM"
+        validate_branch "TO" "$TO"
+
         git fetch origin "$FROM" || { echo "❌ Branch $FROM not found"; exit 1; }
         git fetch origin "$TO" || { echo "❌ Branch $TO not found"; exit 1; }
 
