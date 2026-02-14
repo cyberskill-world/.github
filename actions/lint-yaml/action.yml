@@ -4,12 +4,18 @@ description: "Lints YAML files using yamllint"
 runs:
   using: "composite"
   steps:
+    - name: Resolve Requirements Path
+      shell: bash
+      id: req_path
+      run: |
+        echo "path=$(readlink -f "${{ github.action_path }}/requirements.txt")" >> $GITHUB_OUTPUT
+
     - name: JSON/YAML Validator
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
       with:
         python-version: '3.14.3'
         cache: 'pip'
-        cache-dependency-path: '${{ github.action_path }}/requirements.txt'
+        cache-dependency-path: '${{ steps.req_path.outputs.path }}'
 
     - name: Install dependencies
       run: pip install -r "${{ github.action_path }}/requirements.txt"
