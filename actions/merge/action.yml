@@ -67,4 +67,4 @@ runs:
         echo "Merging $FROM_BRANCH into $TO_BRANCH with strategy: $STRATEGY"
         git merge "origin/$FROM_BRANCH" --allow-unrelated-histories -X "$STRATEGY" -m "Merge $FROM_BRANCH into $TO_BRANCH"
 
-        git push origin "$TO_BRANCH"
+        git push origin "HEAD:refs/heads/$TO_BRANCH"
