@@ -52,7 +52,7 @@ runs:
           cd "$DEPLOY_PATH"
 
           echo "⬇️ Fetching latest changes..."
-          git fetch origin
+          git fetch origin +refs/heads/"$DEPLOY_BRANCH":refs/remotes/origin/"$DEPLOY_BRANCH" || git fetch origin "$DEPLOY_BRANCH"
           git checkout "$DEPLOY_BRANCH"
           git pull origin "$DEPLOY_BRANCH"
 
