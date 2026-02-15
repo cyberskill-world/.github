@@ -44,22 +44,22 @@ git remote -v
 In view of staying up to date with the central repository :
 
 ```sh
-git pull upstream master
+git pull upstream main
 ```
 
 ## Choose a base branch
-Before starting development, you need to know which branch to base your modifications/additions on. When in doubt, use master.
+Before starting development, you need to know which branch to base your modifications/additions on. When in doubt, use main.
 
 | Type of change                |           | Branches              |
 | :------------------           |:---------:| ---------------------:|
-| Documentation                 |           | `master`              |
-| Bug fixes                     |           | `master`              |
-| New features                  |           | `master`              |
+| Documentation                 |           | `main`              |
+| Bug fixes                     |           | `main`              |
+| New features                  |           | `main`              |
 | New issues models             |           | `YOUR-USERNAME:patch` |
 
 ```sh
 # Switch to the desired branch
-git switch master
+git switch main
 
 # Pull down any upstream changes
 git pull

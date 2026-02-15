@@ -1,5 +1,5 @@
 ---
-name: 🔀 CS - Merge
+name: 🔀 Merge
 description: This action merge the specific branch into the target branch
 inputs:
   GH_TOKEN:

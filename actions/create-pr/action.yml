@@ -1,5 +1,5 @@
 ---
-name: 📜 CS - Create PR
+name: 📜 Create PR
 description: This action creates a pull request from the source branch to the target branch
 inputs:
   GH_TOKEN:

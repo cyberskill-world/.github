@@ -1,5 +1,5 @@
 ---
-name: 🔥 CS - Trigger Events
+name: 🔥 Trigger Events
 description: This action triggers multiple events for a single repository
 inputs:
   GH_TOKEN:

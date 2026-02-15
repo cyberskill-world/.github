@@ -1,5 +1,5 @@
 ---
-name: 🛠️ CS - Lint
+name: 🛠️ Lint
 description: This action lints the project
 runs:
   using: "composite"
