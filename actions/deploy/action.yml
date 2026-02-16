@@ -48,6 +48,33 @@ runs:
           if [ -f ~/.profile ]; then source ~/.profile; fi
           if [ -f ~/.nvm/nvm.sh ]; then source ~/.nvm/nvm.sh; fi || true
 
+          # Validate branch name to prevent argument injection
+          if [[ -z "$DEPLOY_BRANCH" ]]; then
+            echo "❌ Error: Branch name cannot be empty."
+            exit 1
+          fi
+          if [[ "$DEPLOY_BRANCH" == -* ]]; then
+            echo "❌ Error: Branch name '$DEPLOY_BRANCH' must not start with '-'."
+            exit 1
+          fi
+          if [[ "$DEPLOY_BRANCH" == refs/* ]]; then
+            echo "❌ Error: Branch name '$DEPLOY_BRANCH' must not start with 'refs/'."
+            exit 1
+          fi
+          if [[ "$DEPLOY_BRANCH" == *:* ]]; then
+            echo "❌ Error: Branch name '$DEPLOY_BRANCH' must not contain ':'."
+            exit 1
+          fi
+          # Ensure git is available and check branch format
+          if ! command -v git >/dev/null 2>&1; then
+            echo "❌ Error: git is not installed or not available in PATH."
+            exit 1
+          fi
+          if ! git check-ref-format --branch "$DEPLOY_BRANCH" >/dev/null 2>&1; then
+            echo "❌ Error: Branch name '$DEPLOY_BRANCH' is not a valid Git branch name."
+            exit 1
+          fi
+
           echo "🚀 Deploying to $DEPLOY_PATH..."
           cd "$DEPLOY_PATH"
 
