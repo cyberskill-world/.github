@@ -65,12 +65,14 @@ runs:
             echo "❌ Error: Branch name '$DEPLOY_BRANCH' must not contain ':'."
             exit 1
           fi
-          # Ensure git is available and check format
-          if command -v git >/dev/null 2>&1; then
-            if ! git check-ref-format --branch "$DEPLOY_BRANCH" >/dev/null 2>&1; then
-              echo "❌ Error: Branch name '$DEPLOY_BRANCH' is not a valid Git branch name."
-              exit 1
-            fi
+          # Ensure git is available and check branch format
+          if ! command -v git >/dev/null 2>&1; then
+            echo "❌ Error: git is not installed or not available in PATH."
+            exit 1
+          fi
+          if ! git check-ref-format --branch "$DEPLOY_BRANCH" >/dev/null 2>&1; then
+            echo "❌ Error: Branch name '$DEPLOY_BRANCH' is not a valid Git branch name."
+            exit 1
           fi
 
           echo "🚀 Deploying to $DEPLOY_PATH..."
