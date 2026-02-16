@@ -61,6 +61,10 @@ runs:
             echo "❌ Error: Branch name '$DEPLOY_BRANCH' must not start with 'refs/'."
             exit 1
           fi
+          if [[ "$DEPLOY_BRANCH" == *:* ]]; then
+            echo "❌ Error: Branch name '$DEPLOY_BRANCH' must not contain ':'."
+            exit 1
+          fi
           # Ensure git is available and check format
           if command -v git >/dev/null 2>&1; then
             if ! git check-ref-format --branch "$DEPLOY_BRANCH" >/dev/null 2>&1; then
