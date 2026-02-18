@@ -1,3 +1,7 @@
 ## 2025-01-22 - [Avoid Alpha/Non-Standard Python Versions in CI]
 **Learning:** Using a Python version that is not pre-installed on GitHub Actions runners (e.g., `3.14.3` alpha) forces `actions/setup-python` to download and compile it from source, adding significant overhead (30s to minutes) to every workflow run.
 **Action:** Always prefer stable Python versions (e.g., `3.12`, `3.13`) that are pre-cached on runners unless a specific bleeding-edge feature is strictly required. This ensures near-instant setup.
+
+## 2026-02-15 - Git Fetch Optimization for Deployments
+**Learning:** Fetching all branches (`git fetch origin`) in deployment scripts is wasteful for large repositories. Targeting a specific branch via refspec (`git fetch origin +refs/heads/$BRANCH:refs/remotes/origin/$BRANCH`) significantly reduces data transfer and time. A fallback to a narrower fetch (`|| git fetch origin $BRANCH`) can help with non-standard refs or tags, but full tag-based deployments also require that later steps do not assume a branch checkout (for example, `git pull origin "$DEPLOY_BRANCH"` breaks on detached HEAD and keeps the current workflow branch-only).
+**Action:** When optimizing deployment scripts, prefer targeted fetches over full fetches for branch-based deployments. If tag or non-standard-ref deployments are needed, also update the deploy logic (e.g., avoid `git pull` on detached HEAD) so that the workflow no longer assumes branch-only behavior.
