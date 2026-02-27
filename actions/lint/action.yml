@@ -5,7 +5,7 @@ runs:
   using: "composite"
   steps:
     - name: Lint YAML
-      uses: cyberskill-world/.github/actions/lint-yaml@main
+      uses: ./actions/lint-yaml
 
     - name: Run lint
       shell: bash
