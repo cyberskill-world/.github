@@ -13,8 +13,8 @@ runs:
       env:
         TARGET_BRANCH: ${{ inputs.BRANCH }}
       run: |
-        if [ "${GITHUB_REF##*/}" != "$TARGET_BRANCH" ]; then
-          echo "Not on '$TARGET_BRANCH' branch. Skipping.";
+        if [[ "$GITHUB_REF_NAME" != "$TARGET_BRANCH" ]]; then
+          echo "Not on '$TARGET_BRANCH' branch (current: '$GITHUB_REF_NAME'). Skipping.";
           exit 0
         fi
         echo "On '$TARGET_BRANCH' branch. Continuing."
