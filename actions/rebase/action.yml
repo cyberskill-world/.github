@@ -54,8 +54,10 @@ runs:
         validate_branch "FROM" "$FROM"
         validate_branch "TO" "$TO"
 
-        git fetch origin "$FROM" || { echo "❌ Branch $FROM not found"; exit 1; }
-        git fetch origin "$TO" || { echo "❌ Branch $TO not found"; exit 1; }
+        # ⚡ Bolt: Fetch both branches in a single command to save a network round-trip
+        git fetch origin "$FROM" "$TO" || {
+          echo "❌ Branch $FROM or $TO not found"; exit 1;
+        }
 
         git checkout "$TO"
         git reset --hard "origin/$TO"
