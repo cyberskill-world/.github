@@ -36,25 +36,8 @@ runs:
       run: |
         set -euo pipefail
 
-        validate_branch() {
-          local name="$1"
-          local value="$2"
-
-          # Reject obvious refspecs or full refs
-          if [[ "$value" == *:* ]]; then
-            echo "❌ Invalid branch name for $name: must not contain ':' (refspecs are not allowed)" >&2
-            exit 1
-          fi
-          if [[ "$value" == refs/* ]]; then
-            echo "❌ Invalid branch name for $name: must not start with 'refs/'" >&2
-            exit 1
-          fi
-
-          if ! git check-ref-format --branch "$value" > /dev/null 2>&1; then
-            echo "❌ Invalid branch name for $name: '$value' is not a valid Git branch" >&2
-            exit 1
-          fi
-        }
+        # Source shared validation
+        source "${{ github.action_path }}/../../scripts/validate-branch.sh"
 
         validate_branch "FROM" "$FROM_BRANCH"
         validate_branch "TO" "$TO_BRANCH"

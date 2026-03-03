@@ -44,65 +44,44 @@ runs:
         passphrase: ${{ inputs.PASSPHRASE }}
         envs: DEPLOY_PATH,DEPLOY_BRANCH
         script: |
-          set -e
+          set -euo pipefail
           if [ -f ~/.profile ]; then source ~/.profile; fi
           if [ -f ~/.nvm/nvm.sh ]; then source ~/.nvm/nvm.sh; fi || true
 
-          # Validate branch name to prevent argument injection
-          if [[ -z "$DEPLOY_BRANCH" ]]; then
-            echo "❌ Error: Branch name cannot be empty."
-            exit 1
-          fi
-          if [[ "$DEPLOY_BRANCH" == -* ]]; then
-            echo "❌ Error: Branch name '$DEPLOY_BRANCH' must not start with '-'."
-            exit 1
-          fi
-          if [[ "$DEPLOY_BRANCH" == refs/* ]]; then
-            echo "❌ Error: Branch name '$DEPLOY_BRANCH' must not start with 'refs/'."
-            exit 1
-          fi
-          if [[ "$DEPLOY_BRANCH" == *:* ]]; then
-            echo "❌ Error: Branch name '$DEPLOY_BRANCH' must not contain ':'."
-            exit 1
-          fi
-          # Ensure git is available and check branch format
+          # --- Validation ---
+          validate_branch() {
+            local name="$1"
+            local value="$2"
+            if [[ -z "$value" ]]; then
+              echo "❌ Invalid branch name for $name: must not be empty" >&2; exit 1
+            fi
+            if [[ "$value" == -* ]]; then
+              echo "❌ Invalid branch name for $name: must not start with '-'" >&2; exit 1
+            fi
+            if [[ "$value" == *:* ]]; then
+              echo "❌ Invalid branch name for $name: must not contain ':'" >&2; exit 1
+            fi
+            if [[ "$value" == refs/* ]]; then
+              echo "❌ Invalid branch name for $name: must not start with 'refs/'" >&2; exit 1
+            fi
+            if ! git check-ref-format --branch "$value" > /dev/null 2>&1; then
+              echo "❌ Invalid branch name for $name: '$value' is not a valid Git branch" >&2; exit 1
+            fi
+          }
+
           if ! command -v git >/dev/null 2>&1; then
-            echo "❌ Error: git is not installed or not available in PATH."
+            echo "❌ Error: git is not installed or not available in PATH." >&2
             exit 1
           fi
-          if ! git check-ref-format --branch "$DEPLOY_BRANCH" >/dev/null 2>&1; then
-            echo "❌ Error: Branch name '$DEPLOY_BRANCH' is not a valid Git branch name."
-            exit 1
-          fi
+
+          validate_branch "DEPLOY_BRANCH" "$DEPLOY_BRANCH"
 
           echo "🚀 Deploying to $DEPLOY_PATH..."
           cd "$DEPLOY_PATH"
 
-          # Validate DEPLOY_BRANCH to prevent git option/refspec injection
-          if [ -z "$DEPLOY_BRANCH" ]; then
-            echo "Error: DEPLOY_BRANCH is empty." >&2
-            exit 1
-          fi
+          # Capture current commit for rollback
+          PREV_COMMIT=$(git rev-parse HEAD)
 
-          case "$DEPLOY_BRANCH" in
-            -*)
-              echo "Error: DEPLOY_BRANCH must not start with '-'." >&2
-              exit 1
-              ;;
-            *:*)
-              echo "Error: DEPLOY_BRANCH must not contain ':'." >&2
-              exit 1
-              ;;
-            refs/*)
-              echo "Error: DEPLOY_BRANCH must not start with 'refs/'." >&2
-              exit 1
-              ;;
-          esac
-
-          if ! git check-ref-format --branch "$DEPLOY_BRANCH"; then
-            echo "Error: DEPLOY_BRANCH '$DEPLOY_BRANCH' is not a valid branch name." >&2
-            exit 1
-          fi
           echo "⬇️ Fetching latest changes..."
           git fetch origin +refs/heads/"$DEPLOY_BRANCH":refs/remotes/origin/"$DEPLOY_BRANCH"
           git checkout "$DEPLOY_BRANCH"
@@ -117,5 +96,18 @@ runs:
           echo "🔄 Reloading application..."
           pm2 startOrReload ecosystem.config.cjs --update-env
           pm2 save
+
+          # Health check with rollback on failure
+          sleep 3
+          if ! pm2 ls | grep -qE "online"; then
+            echo "❌ Health check failed! Rolling back to $PREV_COMMIT..."
+            git checkout "$PREV_COMMIT"
+            pnpm install --frozen-lockfile
+            pnpm build
+            pm2 startOrReload ecosystem.config.cjs --update-env
+            pm2 save
+            echo "⚠️ Rolled back to $PREV_COMMIT"
+            exit 1
+          fi
 
           echo "✅ Deployment successful!"

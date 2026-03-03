@@ -8,7 +8,7 @@ on:
     branches: ["main"]
 
 jobs:
-  validate:
+  validate-yaml:
     name: Validate YAML
     runs-on: ubuntu-latest
     steps:
@@ -17,3 +17,55 @@ jobs:
 
       - name: Lint YAML
         uses: ./actions/lint-yaml
+
+  validate-actions:
+    name: Validate Action Schemas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Install actionlint
+        shell: bash
+        run: |
+          VERSION="1.7.7"
+          BASE="https://github.com/rhysd/actionlint/releases/download"
+          curl -sL "${BASE}/v${VERSION}/actionlint_${VERSION}_linux_amd64.tar.gz" \
+            | tar xz -C /usr/local/bin actionlint
+
+      - name: Lint GitHub Actions
+        shell: bash
+        run: actionlint -color
+
+  pin-checker:
+    name: Verify SHA Pinning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Check all uses are SHA-pinned
+        shell: bash
+        run: |
+          set -euo pipefail
+          ERRORS=0
+
+          while IFS= read -r file; do
+            while IFS= read -r line; do
+              # Skip lines referencing local actions (./actions/...)
+              if echo "$line" | grep -qE 'uses:\s*\./'; then
+                continue
+              fi
+              # Check if the action reference uses a full 40-char SHA
+              if ! echo "$line" | grep -qE 'uses:\s*[^@]+@[0-9a-f]{40}'; then
+                echo "::error file=$file::Unpinned action: $line"
+                ERRORS=$((ERRORS + 1))
+              fi
+            done < <(grep -nE '^\s*uses:' "$file" || true)
+          done < <(find . -name '*.yml' -o -name '*.yaml' | grep -v node_modules | grep -v .git/)
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::Found $ERRORS unpinned action reference(s). All 'uses:' must be pinned to full commit SHAs."
+            exit 1
+          fi
+          echo "✅ All action references are SHA-pinned."
