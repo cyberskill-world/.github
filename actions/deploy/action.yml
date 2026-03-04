@@ -8,7 +8,7 @@ inputs:
   PORT:
     description: The port to connect to the server
     required: true
-    default: 22
+    default: "22"
   USERNAME:
     description: The username to connect to the server
     required: true

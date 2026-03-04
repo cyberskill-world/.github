@@ -1,6 +1,6 @@
 ---
 name: 🔀 Merge
-description: This action merge the specific branch into the target branch
+description: This action merges a source branch into the target branch
 inputs:
   GH_TOKEN:
     description: GitHub token for authentication

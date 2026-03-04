@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           VERSION="1.7.11"
-          CHECKSUM="7d588eeb1ceb1e926b5618162a082453e1618b7772597e4ef8270e08777a8114"
+          CHECKSUM="900919a84f2229bac68ca9cd4103ea297abc35e9689ebb842c6e34a3d1b01b0a"
           BASE="https://github.com/rhysd/actionlint/releases/download"
           ARCHIVE="actionlint_${VERSION}_linux_amd64.tar.gz"
 
@@ -79,7 +79,7 @@ jobs:
                 ERRORS=$((ERRORS + 1))
               fi
             done < <(grep -nE '^\s*uses:' "$file" || true)
-          done < <(find . -name '*.yml' -o -name '*.yaml' | grep -v node_modules | grep -v .git/)
+          done < <(find . -name '*.yml' -o -name '*.yaml' | grep -v node_modules | grep -v '^\./\.git/')
 
           if [ "$ERRORS" -gt 0 ]; then
             echo "::error::Found $ERRORS unpinned action reference(s). All 'uses:' must be pinned to full commit SHAs."

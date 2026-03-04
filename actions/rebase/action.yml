@@ -1,6 +1,6 @@
 ---
 name: 🔀 Rebase
-description: This action rebase the specific branch into the target branch
+description: This action rebases a source branch onto the target branch
 inputs:
   GH_TOKEN:
     description: GitHub token for authentication
