@@ -46,7 +46,9 @@ runs:
             echo "Finished event: $event_trimmed"
           else
             echo "Failed event: $event_trimmed"
-            touch "$STATUS_DIR/$event_trimmed.failed"
+            # Sanitize event name for safe filename (replace non-alphanumeric with _)
+            safe_name=$(echo "$event_trimmed" | sed 's/[^a-zA-Z0-9_-]/_/g')
+            touch "$STATUS_DIR/$safe_name.failed"
           fi
         }
 

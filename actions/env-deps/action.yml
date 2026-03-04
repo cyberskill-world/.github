@@ -29,6 +29,7 @@ runs:
       run: |
         if [ -f ".env.example" ]; then
           cp .env.example .env
+          echo "⚠️ Copied .env.example → .env — ensure .env.example contains NO real secrets."
         else
           echo ".env.example not found. Skipping."
         fi

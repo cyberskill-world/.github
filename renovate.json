@@ -13,7 +13,8 @@
     "enabledManagers": [
         "github-actions",
         "npm",
-        "cargo"
+        "cargo",
+        "pip_requirements"
     ],
     "schedule": [
         "after 9am and before 5pm every weekday"

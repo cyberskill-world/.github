@@ -10,12 +10,35 @@ inputs:
     description: Name of the coverage artifact
     required: false
     default: "coverage"
+  COVERAGE_THRESHOLD:
+    description: "Minimum coverage percentage to pass (e.g., '80'). Requires a coverage/coverage-summary.json file. Leave empty to skip."
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:
     - name: Run tests
       shell: bash
       run: pnpm run --if-present test
+
+    - name: Check coverage threshold
+      if: ${{ inputs.COVERAGE_THRESHOLD != '' }}
+      shell: bash
+      env:
+        THRESHOLD: ${{ inputs.COVERAGE_THRESHOLD }}
+      run: |
+        SUMMARY="coverage/coverage-summary.json"
+        if [ ! -f "$SUMMARY" ]; then
+          echo "::warning::Coverage summary not found at $SUMMARY. Skipping threshold check."
+          exit 0
+        fi
+        ACTUAL=$(python3 -c "import json; print(json.load(open('$SUMMARY'))['total']['lines']['pct'])" 2>/dev/null || echo "0")
+        echo "📊 Coverage: ${ACTUAL}% (threshold: ${THRESHOLD}%)"
+        if [ "$(echo "$ACTUAL < $THRESHOLD" | bc -l)" -eq 1 ]; then
+          echo "::error::Coverage ${ACTUAL}% is below threshold ${THRESHOLD}%"
+          exit 1
+        fi
+        echo "✅ Coverage meets threshold."
 
     - name: Upload coverage
       if: ${{ inputs.COVERAGE == 'true' }}

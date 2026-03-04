@@ -1,6 +1,7 @@
 ---
 ignore: |
   .git/
+  .agent/
   node_modules/
   pnpm-lock.yaml
 

@@ -6,6 +6,14 @@ inputs:
     description: Minimum vulnerability level to fail on (low, moderate, high, critical)
     required: false
     default: "high"
+  OUTPUT_FORMAT:
+    description: Output format for audit results (text, json). When 'json', results are saved as an artifact.
+    required: false
+    default: "text"
+  OUTPUT_ARTIFACT:
+    description: Name of the artifact to upload audit results to (only used when OUTPUT_FORMAT is 'json')
+    required: false
+    default: "security-audit-report"
 runs:
   using: "composite"
   steps:
@@ -13,4 +21,20 @@ runs:
       shell: bash
       env:
         AUDIT_LEVEL: ${{ inputs.AUDIT_LEVEL }}
-      run: pnpm audit --audit-level="$AUDIT_LEVEL"
+        OUTPUT_FORMAT: ${{ inputs.OUTPUT_FORMAT }}
+      run: |
+        if [ "$OUTPUT_FORMAT" = "json" ]; then
+          pnpm audit --audit-level="$AUDIT_LEVEL" --json > audit-report.json || true
+          # Re-run without --json to get the exit code for pass/fail
+          pnpm audit --audit-level="$AUDIT_LEVEL"
+        else
+          pnpm audit --audit-level="$AUDIT_LEVEL"
+        fi
+
+    - name: Upload audit report
+      if: ${{ inputs.OUTPUT_FORMAT == 'json' }}
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7.0.0
+      with:
+        name: ${{ inputs.OUTPUT_ARTIFACT }}
+        path: audit-report.json
+        retention-days: 30

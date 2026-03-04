@@ -11,6 +11,10 @@ inputs:
   TO:
     description: The branch to rebase into
     required: true
+  DRY_RUN:
+    description: "If 'true', only shows what would happen without actually pushing"
+    required: false
+    default: "false"
 runs:
   using: "composite"
   steps:
@@ -28,6 +32,7 @@ runs:
       env:
         FROM: ${{ inputs.FROM }}
         TO: ${{ inputs.TO }}
+        DRY_RUN: ${{ inputs.DRY_RUN }}
       run: |
         set -euo pipefail
 
@@ -51,4 +56,10 @@ runs:
           exit 1
         }
 
-        git push origin "$TO" --force-with-lease
+        if [ "$DRY_RUN" = "true" ]; then
+          echo "🔍 DRY RUN: Would push $TO with force-with-lease"
+          git push origin "$TO" --force-with-lease --dry-run
+          echo "✅ Dry run complete. No changes pushed."
+        else
+          git push origin "$TO" --force-with-lease
+        fi

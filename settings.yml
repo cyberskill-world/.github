@@ -14,10 +14,10 @@ rulesets:
         actor_type: RepositoryRole
         bypass_mode: always
       - actor_id: 2740
-        actor_type: Integration
+        actor_type: Integration  # semantic-release
         bypass_mode: always
       - actor_id: 29110
-        actor_type: Integration
+        actor_type: Integration  # Renovate
         bypass_mode: always
     conditions:
       ref_name:

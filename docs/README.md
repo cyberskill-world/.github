@@ -68,6 +68,7 @@ Default [community health files](https://docs.github.com/en/communities/setting-
 - [CONTRIBUTING.md](CONTRIBUTING.md) — How to fork, branch, and contribute
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — Contributor Covenant v2.1
 - [SECURITY.md](SECURITY.md) — Vulnerability reporting & disclosure policy
+- [RELEASING.md](RELEASING.md) — How actions are released and versioned
 
 ## 🤖 CI for This Repo
 

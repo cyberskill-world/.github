@@ -29,3 +29,4 @@ runs:
         name: ${{ inputs.BUILD_ARTIFACT_NAME }}
         path: ${{ inputs.BUILD_PATH }}
         retention-days: ${{ inputs.RETENTION_DAYS }}
+        if-no-files-found: ignore

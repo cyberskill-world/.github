@@ -15,6 +15,10 @@ inputs:
     description: The strategy to use for the merge
     required: false
     default: "theirs"
+  ALLOW_UNRELATED:
+    description: "Allow merging unrelated histories (default: false)"
+    required: false
+    default: "false"
 runs:
   using: "composite"
   steps:
@@ -33,6 +37,7 @@ runs:
         FROM_BRANCH: ${{ inputs.FROM }}
         TO_BRANCH: ${{ inputs.TO }}
         STRATEGY: ${{ inputs.CHOOSE_STRATEGY }}
+        ALLOW_UNRELATED: ${{ inputs.ALLOW_UNRELATED }}
       run: |
         set -euo pipefail
 
@@ -49,8 +54,12 @@ runs:
         git checkout "$TO_BRANCH"
         git reset --hard "origin/$TO_BRANCH"
 
+        MERGE_ARGS=("origin/$FROM_BRANCH" -X "$STRATEGY" -m "Merge $FROM_BRANCH into $TO_BRANCH")
+        if [ "$ALLOW_UNRELATED" = "true" ]; then
+          MERGE_ARGS+=(--allow-unrelated-histories)
+        fi
+
         echo "Merging $FROM_BRANCH into $TO_BRANCH with strategy: $STRATEGY"
-        git merge "origin/$FROM_BRANCH" --allow-unrelated-histories \
-          -X "$STRATEGY" -m "Merge $FROM_BRANCH into $TO_BRANCH"
+        git merge "${MERGE_ARGS[@]}"
 
         git push origin "HEAD:refs/heads/$TO_BRANCH"

@@ -84,6 +84,28 @@ jobs:
           fi
           echo "✅ All action references are SHA-pinned."
 
+  sync-check:
+    name: Validate Inlined Code Sync
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Check validate_branch() sync between source and deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Extract the inlined validate_branch function from deploy/action.yml
+          sed -n '/^          validate_branch() {$/,/^          }$/p' actions/deploy/action.yml \
+            | sed 's/^          //' > /tmp/deploy_func.sh
+          # Extract the source function from scripts/validate-branch.sh
+          sed -n '/^validate_branch() {$/,/^}$/p' scripts/validate-branch.sh > /tmp/source_func.sh
+          if ! diff -u /tmp/source_func.sh /tmp/deploy_func.sh; then
+            echo "::error::validate_branch() in actions/deploy/action.yml is out of sync with scripts/validate-branch.sh"
+            exit 1
+          fi
+          echo "✅ validate_branch() is in sync."
+
   shellcheck:
     name: Lint Shell Scripts
     runs-on: ubuntu-latest
@@ -91,10 +113,43 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
-      - name: Run ShellCheck on scripts
+      - name: Run ShellCheck on standalone scripts
         shell: bash
         run: |
           if compgen -G "scripts/*.sh" > /dev/null; then
             shellcheck scripts/*.sh
           fi
-          echo "✅ ShellCheck passed."
+          echo "✅ ShellCheck passed for standalone scripts."
+
+      - name: Run ShellCheck on inline action scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          ERRORS=0
+          EXTRACT_DIR=$(mktemp -d)
+          for file in actions/*/action.yml; do
+            # Extract inline 'run:' script blocks from YAML using a heredoc for Python
+            python3 <<PYEOF
+          import yaml, sys, os
+          with open('$file') as f:
+              data = yaml.safe_load(f)
+          steps = data.get('runs', {}).get('steps', [])
+          for i, step in enumerate(steps):
+              if 'run' in step:
+                  name = os.path.basename(os.path.dirname('$file'))
+                  out = os.path.join('$EXTRACT_DIR', f'{name}_{i}.sh')
+                  with open(out, 'w') as o:
+                      o.write('#!/usr/bin/env bash\n')
+                      o.write(step['run'])
+          PYEOF
+          done
+          if compgen -G "$EXTRACT_DIR/*.sh" > /dev/null; then
+            # SC1091: Don't follow sourced files (unavailable in CI context)
+            # SC2086: Allow word splitting where intended in CI scripts
+            shellcheck --exclude=SC1091,SC2086 "$EXTRACT_DIR"/*.sh || ERRORS=$((ERRORS + 1))
+          fi
+          rm -rf "$EXTRACT_DIR"
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::warning::ShellCheck found issues in inline action scripts (non-blocking)"
+          fi
+          echo "✅ Inline ShellCheck complete."
