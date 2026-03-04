@@ -77,4 +77,3 @@ runs:
         else
           echo "All events triggered successfully."
         fi
-
