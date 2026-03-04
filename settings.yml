@@ -1,9 +1,12 @@
 ---
+# Organization-wide tag protection rulesets applied via probot/settings.
+# These rules prevent accidental tag deletion/overwrite and enforce SemVer naming.
 rulesets:
   - name: Tags
     target: tag
     enforcement: active
     bypass_actors:
+      # actor_id: null = all actors of this type (not a specific actor)
       - actor_id: null
         actor_type: OrganizationAdmin
         bypass_mode: always
@@ -11,7 +14,7 @@ rulesets:
         actor_type: DeployKey
         bypass_mode: always
       - actor_id: 5
-        actor_type: RepositoryRole
+        actor_type: RepositoryRole  # Maintainer role
         bypass_mode: always
       - actor_id: 2740
         actor_type: Integration  # semantic-release

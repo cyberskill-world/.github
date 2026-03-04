@@ -14,7 +14,7 @@ uses: cyberskill-world/.github/actions/<action-name>@main
 | ------ | ----------- |
 | [`env-deps`](../actions/env-deps) | Sets up pnpm, Node.js, `.env`, and installs dependencies |
 | [`build`](../actions/build) | Runs `pnpm build` and optionally uploads artifacts |
-| [`lint`](../actions/lint) | Runs YAML lint + `pnpm lint` |
+| [`lint`](../actions/lint) | Runs YAML lint + `pnpm lint` (with optional `SKIP_YAML_LINT` input) |
 | [`lint-yaml`](../actions/lint-yaml) | Standalone YAML linting via `yamllint` |
 | [`test`](../actions/test) | Runs `pnpm test` with optional coverage upload |
 | [`security-audit`](../actions/security-audit) | Runs `pnpm audit` with configurable severity threshold |
@@ -77,7 +77,11 @@ The [CI workflow](../.github/workflows/ci.yml) validates this repo itself:
 1. **Validate YAML** — `yamllint` on all YAML files
 2. **Validate Action Schemas** — `actionlint` on all workflow/action files
 3. **Verify SHA Pinning** — Ensures all external `uses:` are pinned to full commit SHAs
-4. **Lint Shell Scripts** — `shellcheck` on all scripts
+4. **Validate Inlined Code Sync** — Ensures duplicated functions stay in sync
+5. **Lint Shell Scripts** — `shellcheck` on all scripts (standalone + inline)
+6. **Validate CODEOWNERS** — Syntax validation for ownership rules
+7. **Detect Breaking Changes** — Flags removed required inputs (override with label)
+8. **Verify README Sync** — Ensures all actions are documented
 
 ## 📋 Other Config
 

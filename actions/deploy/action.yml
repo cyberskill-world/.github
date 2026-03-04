@@ -13,8 +13,9 @@ inputs:
     description: The username to connect to the server
     required: true
   PASSWORD:
-    description: The password to connect to the server
+    description: "(Deprecated: prefer KEY-based auth) The password to connect to the server"
     required: false
+    deprecationMessage: "PASSWORD-based SSH auth is discouraged. Use KEY-based authentication instead."
   KEY:
     description: The private key to connect to the server
     required: true
@@ -160,6 +161,27 @@ runs:
             pnpm build
             pm2 startOrReload ecosystem.config.cjs --update-env
             pm2 save
+
+            # Verify rollback succeeded with same health check
+            ROLLBACK_OK=0
+            for attempt in $(seq 1 "$HEALTH_RETRIES"); do
+              sleep "$HEALTH_INTERVAL"
+              if [ -n "$APP_NAME_FILTER" ]; then
+                ROLLBACK_OK=$(pm2 jlist | jq -r --arg name "$APP_NAME_FILTER" '.[] | select(.name == $name) | .pm2_env.status' | grep -c "online" || true)
+              else
+                ROLLBACK_OK=$(pm2 ls | grep -c "online" || true)
+              fi
+              if [ "$ROLLBACK_OK" -gt 0 ]; then
+                break
+              fi
+              echo "⏳ Rollback health check attempt $attempt/$HEALTH_RETRIES..."
+            done
+
+            if [ "$ROLLBACK_OK" -eq 0 ]; then
+              echo "🚨 CRITICAL: Rollback to $PREV_COMMIT also failed! Manual intervention required."
+              exit 2
+            fi
+
             echo "⚠️ Rolled back to $PREV_COMMIT"
             exit 1
           fi

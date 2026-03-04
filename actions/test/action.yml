@@ -22,6 +22,7 @@ runs:
       run: pnpm run --if-present test
 
     - name: Check coverage threshold
+      # Requires python3 and bc (available by default on ubuntu-latest GitHub runners)
       if: ${{ inputs.COVERAGE_THRESHOLD != '' }}
       shell: bash
       env:

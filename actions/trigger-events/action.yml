@@ -69,8 +69,8 @@ runs:
         # Wait for all background jobs to finish
         wait
 
-        # Check for failures
-        failures=$(ls "$STATUS_DIR"/*.failed 2>/dev/null | xargs -n 1 basename -s .failed || true)
+        # Check for failures using find for portability (ls glob + xargs basename is fragile)
+        failures=$(find "$STATUS_DIR" -name "*.failed" -exec basename -s .failed {} \; 2>/dev/null | tr '\n' ' ' || true)
         rm -rf "$STATUS_DIR"
 
         if [[ -n "$failures" ]]; then

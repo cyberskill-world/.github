@@ -24,9 +24,13 @@ runs:
         OUTPUT_FORMAT: ${{ inputs.OUTPUT_FORMAT }}
       run: |
         if [ "$OUTPUT_FORMAT" = "json" ]; then
-          pnpm audit --audit-level="$AUDIT_LEVEL" --json > audit-report.json || true
-          # Re-run without --json to get the exit code for pass/fail
-          pnpm audit --audit-level="$AUDIT_LEVEL"
+          pnpm audit --audit-level="$AUDIT_LEVEL" --json > audit-report.json || AUDIT_EXIT=$?
+          # Display summary for CI logs
+          echo "📋 Audit report saved to audit-report.json"
+          if [ -f audit-report.json ]; then
+            python3 -c "import json; d=json.load(open('audit-report.json')); v=d.get('metadata',{}).get('vulnerabilities',{}); print(f'Found: {sum(v.values())} vulnerabilities')" 2>/dev/null || true
+          fi
+          exit "${AUDIT_EXIT:-0}"
         else
           pnpm audit --audit-level="$AUDIT_LEVEL"
         fi

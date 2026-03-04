@@ -18,6 +18,7 @@ jobs:
   validate-yaml:
     name: Validate YAML
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -28,6 +29,7 @@ jobs:
   validate-actions:
     name: Validate Action Schemas
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -49,6 +51,7 @@ jobs:
   pin-checker:
     name: Verify SHA Pinning
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -87,6 +90,7 @@ jobs:
   sync-check:
     name: Validate Inlined Code Sync
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -109,6 +113,7 @@ jobs:
   shellcheck:
     name: Lint Shell Scripts
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -150,6 +155,143 @@ jobs:
           fi
           rm -rf "$EXTRACT_DIR"
           if [ "$ERRORS" -gt 0 ]; then
-            echo "::warning::ShellCheck found issues in inline action scripts (non-blocking)"
+            echo "::error::ShellCheck found issues in inline action scripts"
+            exit 1
           fi
           echo "✅ Inline ShellCheck complete."
+
+  codeowners-check:
+    name: Validate CODEOWNERS
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Validate CODEOWNERS syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          ERRORS=0
+          if [ ! -f CODEOWNERS ]; then
+            echo "::warning::No CODEOWNERS file found"
+            exit 0
+          fi
+          while IFS= read -r line; do
+            # Skip comments and empty lines
+            [[ "$line" =~ ^[[:space:]]*# ]] && continue
+            [[ -z "${line// }" ]] && continue
+            # Each rule must have at least a pattern and one owner
+            parts=($line)
+            if [ "${#parts[@]}" -lt 2 ]; then
+              echo "::error::Invalid CODEOWNERS line (missing owner): $line"
+              ERRORS=$((ERRORS + 1))
+            fi
+            # Owners must start with @ or be an email
+            for owner in "${parts[@]:1}"; do
+              if [[ "$owner" != @* ]] && [[ "$owner" != *@* ]]; then
+                echo "::error::Invalid owner format '$owner' in: $line"
+                ERRORS=$((ERRORS + 1))
+              fi
+            done
+          done < CODEOWNERS
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::Found $ERRORS CODEOWNERS syntax error(s)"
+            exit 1
+          fi
+          echo "✅ CODEOWNERS syntax is valid."
+
+  breaking-change-guard:
+    name: Detect Breaking Input Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Checkout base branch for comparison
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      - name: Compare action input schemas
+        shell: bash
+        run: |
+          set -euo pipefail
+          BREAKING=0
+          for base_file in base/actions/*/action.yml; do
+            action_name=$(basename "$(dirname "$base_file")")
+            pr_file="actions/$action_name/action.yml"
+            if [ ! -f "$pr_file" ]; then
+              echo "::warning::Action '$action_name' was deleted in this PR"
+              BREAKING=$((BREAKING + 1))
+              continue
+            fi
+            # Extract required input names from base
+            BASE_INPUTS=$(python3 -c "
+          import yaml
+          with open('$base_file') as f:
+              data = yaml.safe_load(f) or {}
+          inputs = data.get('inputs', {}) or {}
+          for name, props in inputs.items():
+              if props.get('required', False):
+                  print(name)
+          " 2>/dev/null | sort || true)
+            # Extract required input names from PR
+            PR_INPUTS=$(python3 -c "
+          import yaml
+          with open('$pr_file') as f:
+              data = yaml.safe_load(f) or {}
+          inputs = data.get('inputs', {}) or {}
+          for name, props in inputs.items():
+              if props.get('required', False):
+                  print(name)
+          " 2>/dev/null | sort || true)
+            # Check for removed required inputs
+            REMOVED=$(comm -23 <(echo "$BASE_INPUTS") <(echo "$PR_INPUTS") || true)
+            if [ -n "$REMOVED" ]; then
+              echo "::error::Action '$action_name' has removed required inputs: $REMOVED"
+              BREAKING=$((BREAKING + 1))
+            fi
+          done
+          if [ "$BREAKING" -gt 0 ]; then
+            echo "::error::Found $BREAKING potential breaking change(s). Add 'breaking-change-approved' label to override."
+            # Check for override label
+            if [ -n "${GITHUB_EVENT_PATH:-}" ]; then
+              LABELS=$(python3 -c "import json; evt=json.load(open('$GITHUB_EVENT_PATH')); print(' '.join(l['name'] for l in evt.get('pull_request',{}).get('labels',[])))" 2>/dev/null || true)
+              if echo "$LABELS" | grep -q "breaking-change-approved"; then
+                echo "✅ Breaking change approved via label."
+                exit 0
+              fi
+            fi
+            exit 1
+          fi
+          echo "✅ No breaking input changes detected."
+
+  readme-sync:
+    name: Verify README Action Table
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Check all actions are listed in README
+        shell: bash
+        run: |
+          set -euo pipefail
+          ERRORS=0
+          for dir in actions/*/; do
+            action_name=$(basename "$dir")
+            if ! grep -q "$action_name" docs/README.md; then
+              echo "::error::Action '$action_name' is not listed in docs/README.md"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::$ERRORS action(s) missing from README. Update the action table in docs/README.md."
+            exit 1
+          fi
+          echo "✅ All actions are documented in README."

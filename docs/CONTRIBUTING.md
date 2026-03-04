@@ -69,3 +69,42 @@ git switch --create patch/1234-name-issue
 ```
 
 Commit your changes, then push the branch to your fork with `git push -u fork` and open a pull request on [the .github repository](https://github.com/cyberskill-world/.github/) following the template provided.
+
+## Action Development Guide
+
+When adding or modifying shared actions, follow these quality standards:
+
+### Required Elements
+
+- **SHA pinning**: All external `uses:` must be pinned to full 40-character commit SHAs (e.g., `@de0fac2e...`), not floating tags
+- **Shell specification**: Every `run:` step must include `shell: bash`
+- **Input validation**: Validate all user-provided inputs. Use `scripts/validate-branch.sh` for branch names
+- **Error handling**: Start scripts with `set -euo pipefail`
+
+### Naming Convention
+
+- **Action name**: Use emoji prefix + descriptive name (e.g., `🛠️ Build`, `🚀 Deploy`)
+- **Input names**: UPPER_SNAKE_CASE (e.g., `BUILD_ARTIFACT_NAME`)
+- **File structure**: `actions/<name>/action.yml`
+
+### Testing Locally
+
+You can validate actions locally before pushing:
+
+```sh
+# Lint all YAML files
+yamllint -c .yamllint .
+
+# Validate action schemas (requires Go)
+go install github.com/rhysd/actionlint/cmd/actionlint@latest
+actionlint -color
+
+# Lint shell scripts
+shellcheck scripts/*.sh
+```
+
+### Documentation
+
+- Update `docs/README.md` action table if you add, remove, or rename inputs/outputs
+- Add inline comments for non-obvious logic
+- Use `# ⚠️ SYNC:` comments to mark code that must stay in sync across files

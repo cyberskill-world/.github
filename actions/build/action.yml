@@ -1,5 +1,5 @@
 ---
-name: 🛠️ CS - Build
+name: 🛠️ Build
 description: This action builds the project
 inputs:
   BUILD_ARTIFACT_NAME:
@@ -29,4 +29,4 @@ runs:
         name: ${{ inputs.BUILD_ARTIFACT_NAME }}
         path: ${{ inputs.BUILD_PATH }}
         retention-days: ${{ inputs.RETENTION_DAYS }}
-        if-no-files-found: ignore
+        if-no-files-found: error
