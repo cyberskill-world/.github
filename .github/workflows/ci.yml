@@ -149,11 +149,11 @@ jobs:
           PYEOF
           done
           if compgen -G "$EXTRACT_DIR/*.sh" > /dev/null; then
-            # SC1091: Don't follow sourced files (unavailable in CI context)
+            # SC1090/SC1091: Don't follow sourced files (unavailable in CI context)
             # SC2086: Allow word splitting where intended in CI scripts
             # SC2296: GitHub Actions expression syntax is not valid bash parameter expansion
             # SC2001: sed style suggestion (not applicable to all use cases)
-            shellcheck --exclude=SC1091,SC2086,SC2296,SC2001 "$EXTRACT_DIR"/*.sh || ERRORS=$((ERRORS + 1))
+            shellcheck --exclude=SC1090,SC1091,SC2086,SC2296,SC2001 "$EXTRACT_DIR"/*.sh || ERRORS=$((ERRORS + 1))
           fi
           rm -rf "$EXTRACT_DIR"
           if [ "$ERRORS" -gt 0 ]; then
