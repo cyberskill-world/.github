@@ -38,17 +38,14 @@ runs:
 
           echo "Triggering event: $event_trimmed"
 
-          # Perform the request
-          http_code=$(jq -n --arg et "$event_trimmed" '{event_type: $et}' | curl -s -o /dev/null -w "%{http_code}" -X POST \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d @- \
-            "https://api.github.com/repos/$REPO/dispatches")
-
-          if [[ "$http_code" -ge 200 && "$http_code" -lt 300 ]]; then
-            echo "Finished event: $event_trimmed (Status: $http_code)"
+          # Use gh api to avoid leaking GH_TOKEN in process arguments
+          if gh api "repos/$REPO/dispatches" \
+            --method POST \
+            --field "event_type=$event_trimmed" \
+            > /dev/null 2>&1; then
+            echo "Finished event: $event_trimmed"
           else
-            echo "Failed event: $event_trimmed (Status: $http_code)"
+            echo "Failed event: $event_trimmed"
             touch "$STATUS_DIR/$event_trimmed.failed"
           fi
         }
@@ -80,3 +77,4 @@ runs:
         else
           echo "All events triggered successfully."
         fi
+

@@ -8,7 +8,6 @@
 /.github/workflows/ @cyberskill-world/core
 
 # Branch & Tag Rulesets
-/rulesets/ @cyberskill-world/core
 /settings.yml @cyberskill-world/core
 
 # Dependency management

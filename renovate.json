@@ -16,7 +16,7 @@
         "cargo"
     ],
     "schedule": [
-        "after 9am and before 5pm on weekdays"
+        "after 9am and before 5pm every weekday"
     ],
     "prHourlyLimit": 4,
     "prConcurrentLimit": 10,
@@ -36,7 +36,8 @@
                 "digest"
             ],
             "automerge": true,
-            "automergeType": "pr"
+            "automergeType": "pr",
+            "minimumReleaseAge": "3 days"
         }
     ]
 }

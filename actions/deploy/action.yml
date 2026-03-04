@@ -30,6 +30,14 @@ inputs:
   APP_NAME:
     description: PM2 app name for targeted health check (if empty, checks any online process)
     required: false
+  HEALTH_CHECK_RETRIES:
+    description: Number of health check retry attempts
+    required: false
+    default: "5"
+  HEALTH_CHECK_INTERVAL:
+    description: Seconds to wait between health check retries
+    required: false
+    default: "3"
 runs:
   using: "composite"
   steps:
@@ -39,6 +47,8 @@ runs:
         DEPLOY_PATH: ${{ inputs.PATH }}
         DEPLOY_BRANCH: ${{ inputs.BRANCH }}
         DEPLOY_APP_NAME: ${{ inputs.APP_NAME }}
+        HEALTH_RETRIES: ${{ inputs.HEALTH_CHECK_RETRIES }}
+        HEALTH_INTERVAL: ${{ inputs.HEALTH_CHECK_INTERVAL }}
       with:
         host: ${{ inputs.HOST }}
         port: ${{ inputs.PORT }}
@@ -46,7 +56,7 @@ runs:
         password: ${{ inputs.PASSWORD }}
         key: ${{ inputs.KEY }}
         passphrase: ${{ inputs.PASSPHRASE }}
-        envs: DEPLOY_PATH,DEPLOY_BRANCH,DEPLOY_APP_NAME
+        envs: DEPLOY_PATH,DEPLOY_BRANCH,DEPLOY_APP_NAME,HEALTH_RETRIES,HEALTH_INTERVAL
         script: |
           set -euo pipefail
           if [ -f ~/.profile ]; then source ~/.profile; fi
@@ -66,7 +76,7 @@ runs:
               echo "❌ Invalid branch name for $name: must not start with '-'" >&2; exit 1
             fi
             if [[ "$value" == *:* ]]; then
-              echo "❌ Invalid branch name for $name: must not contain ':'" >&2; exit 1
+              echo "❌ Invalid branch name for $name: must not contain ':' (refspecs are not allowed)" >&2; exit 1
             fi
             if [[ "$value" == refs/* ]]; then
               echo "❌ Invalid branch name for $name: must not start with 'refs/'" >&2; exit 1
@@ -85,6 +95,12 @@ runs:
 
           if [[ -z "$DEPLOY_PATH" ]]; then
             echo "❌ DEPLOY_PATH must not be empty" >&2; exit 1
+          fi
+          if [[ "$DEPLOY_PATH" != /* ]]; then
+            echo "❌ DEPLOY_PATH must be an absolute path" >&2; exit 1
+          fi
+          if [[ "$DEPLOY_PATH" == *..* ]]; then
+            echo "❌ DEPLOY_PATH must not contain '..' (path traversal)" >&2; exit 1
           fi
           if [[ ! -d "$DEPLOY_PATH" ]]; then
             echo "❌ DEPLOY_PATH '$DEPLOY_PATH' does not exist or is not a directory" >&2; exit 1
@@ -111,18 +127,25 @@ runs:
           pm2 startOrReload ecosystem.config.cjs --update-env
           pm2 save
 
-          # Health check with rollback on failure
-          sleep 3
+          # Health check with retry loop and rollback on failure
           APP_NAME_FILTER="${DEPLOY_APP_NAME:-}"
-          if [ -n "$APP_NAME_FILTER" ]; then
-            HEALTH_OK=$(pm2 jlist | jq -r --arg name "$APP_NAME_FILTER" '.[] | select(.name == $name) | .pm2_env.status' | grep -c "online" || true)
-          else
-            HEALTH_OK=$(pm2 ls | grep -c "online" || true)
-          fi
+          HEALTH_OK=0
+          for attempt in $(seq 1 "$HEALTH_RETRIES"); do
+            sleep "$HEALTH_INTERVAL"
+            if [ -n "$APP_NAME_FILTER" ]; then
+              HEALTH_OK=$(pm2 jlist | jq -r --arg name "$APP_NAME_FILTER" '.[] | select(.name == $name) | .pm2_env.status' | grep -c "online" || true)
+            else
+              HEALTH_OK=$(pm2 ls | grep -c "online" || true)
+            fi
+            if [ "$HEALTH_OK" -gt 0 ]; then
+              break
+            fi
+            echo "⏳ Health check attempt $attempt/$HEALTH_RETRIES..."
+          done
 
           if [ "$HEALTH_OK" -eq 0 ]; then
             echo "❌ Health check failed! Rolling back to $PREV_COMMIT..."
-            git checkout "$PREV_COMMIT"
+            git reset --hard "$PREV_COMMIT"
             pnpm install --frozen-lockfile
             pnpm build
             pm2 startOrReload ecosystem.config.cjs --update-env
@@ -132,3 +155,4 @@ runs:
           fi
 
           echo "✅ Deployment successful!"
+
