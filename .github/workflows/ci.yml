@@ -151,7 +151,9 @@ jobs:
           if compgen -G "$EXTRACT_DIR/*.sh" > /dev/null; then
             # SC1091: Don't follow sourced files (unavailable in CI context)
             # SC2086: Allow word splitting where intended in CI scripts
-            shellcheck --exclude=SC1091,SC2086 "$EXTRACT_DIR"/*.sh || ERRORS=$((ERRORS + 1))
+            # SC2296: GitHub Actions ${{ }} expressions aren't valid bash parameter expansion
+            # SC2001: sed style suggestion (not applicable to all use cases)
+            shellcheck --exclude=SC1091,SC2086,SC2296,SC2001 "$EXTRACT_DIR"/*.sh || ERRORS=$((ERRORS + 1))
           fi
           rm -rf "$EXTRACT_DIR"
           if [ "$ERRORS" -gt 0 ]; then
@@ -182,7 +184,8 @@ jobs:
             [[ "$line" =~ ^[[:space:]]*# ]] && continue
             [[ -z "${line// }" ]] && continue
             # Each rule must have at least a pattern and one owner
-            parts=($line)
+            # Use read -ra to prevent glob expansion (e.g., * would expand to filenames)
+            read -ra parts <<< "$line"
             if [ "${#parts[@]}" -lt 2 ]; then
               echo "::error::Invalid CODEOWNERS line (missing owner): $line"
               ERRORS=$((ERRORS + 1))
