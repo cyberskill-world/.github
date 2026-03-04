@@ -32,18 +32,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
+      - name: Setup Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5  # v5.5.0
+        with:
+          go-version: 'stable'
+          cache: false
+
       - name: Install actionlint
         shell: bash
-        run: |
-          VERSION="1.7.11"
-          CHECKSUM="900919a84f2229bac68ca9cd4103ea297abc35e9689ebb842c6e34a3d1b01b0a"
-          BASE="https://github.com/rhysd/actionlint/releases/download"
-          ARCHIVE="actionlint_${VERSION}_linux_amd64.tar.gz"
-
-          curl -sLo "/tmp/${ARCHIVE}" "${BASE}/v${VERSION}/${ARCHIVE}"
-          echo "${CHECKSUM}  /tmp/${ARCHIVE}" | sha256sum -c -
-          tar xz -C /usr/local/bin actionlint < "/tmp/${ARCHIVE}"
-          rm "/tmp/${ARCHIVE}"
+        run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.11
 
       - name: Lint GitHub Actions
         shell: bash

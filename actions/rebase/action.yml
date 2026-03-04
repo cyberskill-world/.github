@@ -45,6 +45,10 @@ runs:
         git checkout "$TO"
         git reset --hard "origin/$TO"
 
-        git rebase "origin/$FROM"
+        git rebase "origin/$FROM" || {
+          echo "❌ Rebase failed due to conflicts. Aborting..."
+          git rebase --abort
+          exit 1
+        }
 
         git push origin "$TO" --force-with-lease

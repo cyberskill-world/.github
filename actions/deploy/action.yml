@@ -83,6 +83,13 @@ runs:
 
           validate_branch "DEPLOY_BRANCH" "$DEPLOY_BRANCH"
 
+          if [[ -z "$DEPLOY_PATH" ]]; then
+            echo "❌ DEPLOY_PATH must not be empty" >&2; exit 1
+          fi
+          if [[ ! -d "$DEPLOY_PATH" ]]; then
+            echo "❌ DEPLOY_PATH '$DEPLOY_PATH' does not exist or is not a directory" >&2; exit 1
+          fi
+
           echo "🚀 Deploying to $DEPLOY_PATH..."
           cd "$DEPLOY_PATH"
 
