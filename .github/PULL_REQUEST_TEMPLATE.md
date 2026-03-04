@@ -10,8 +10,9 @@
 <!-- Link to the issue this PR addresses (if any). -->
 <!-- Psst... linking issues helps us all stay sane. If this’s a new feature or bug fix, please create an issue first — teamwork makes the dream work! -->
 
-- Resolve cyberskill-world/shared#<issue_number>
-- Fix cyberskill-world/shared#<issue_number>
+- Resolve #<issue_number>
+- Fix #<issue_number>
+<!-- Cross-repo: Resolve cyberskill-world/<repo>#<issue_number> -->
 
 ## Type of Change
 

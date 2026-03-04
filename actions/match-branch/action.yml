@@ -12,9 +12,10 @@ runs:
       shell: bash
       env:
         TARGET_BRANCH: ${{ inputs.BRANCH }}
+        CURRENT_BRANCH: ${{ github.ref_name }}
       run: |
-        if [ "${GITHUB_REF##*/}" != "$TARGET_BRANCH" ]; then
-          echo "Not on '$TARGET_BRANCH' branch. Skipping.";
+        if [ "$CURRENT_BRANCH" != "$TARGET_BRANCH" ]; then
+          echo "Not on '$TARGET_BRANCH' branch (current: '$CURRENT_BRANCH'). Skipping."
           exit 0
         fi
         echo "On '$TARGET_BRANCH' branch. Continuing."

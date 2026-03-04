@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: ["main"]
 
+permissions:
+  contents: read
+
 jobs:
   validate-yaml:
     name: Validate YAML
@@ -29,9 +32,14 @@ jobs:
         shell: bash
         run: |
           VERSION="1.7.7"
+          CHECKSUM="024dd85d3110e25eba8be0de3c3090254d8fb3a1f6e106f9b6107f5f0405cc02"
           BASE="https://github.com/rhysd/actionlint/releases/download"
-          curl -sL "${BASE}/v${VERSION}/actionlint_${VERSION}_linux_amd64.tar.gz" \
-            | tar xz -C /usr/local/bin actionlint
+          ARCHIVE="actionlint_${VERSION}_linux_amd64.tar.gz"
+
+          curl -sLo "/tmp/${ARCHIVE}" "${BASE}/v${VERSION}/${ARCHIVE}"
+          echo "${CHECKSUM}  /tmp/${ARCHIVE}" | sha256sum -c -
+          tar xz -C /usr/local/bin actionlint < "/tmp/${ARCHIVE}"
+          rm "/tmp/${ARCHIVE}"
 
       - name: Lint GitHub Actions
         shell: bash
@@ -56,6 +64,11 @@ jobs:
               if echo "$line" | grep -qE 'uses:\s*\./'; then
                 continue
               fi
+              # Skip org-internal .github repo references (SHA-pinning is impractical
+              # since the SHA changes with every commit to this same repo)
+              if echo "$line" | grep -qE 'uses:\s*cyberskill-world/\.github/'; then
+                continue
+              fi
               # Check if the action reference uses a full 40-char SHA
               if ! echo "$line" | grep -qE 'uses:\s*[^@]+@[0-9a-f]{40}'; then
                 echo "::error file=$file::Unpinned action: $line"
@@ -69,3 +82,18 @@ jobs:
             exit 1
           fi
           echo "✅ All action references are SHA-pinned."
+
+  shellcheck:
+    name: Lint Shell Scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Run ShellCheck on scripts
+        shell: bash
+        run: |
+          if compgen -G "scripts/*.sh" > /dev/null; then
+            shellcheck scripts/*.sh
+          fi
+          echo "✅ ShellCheck passed."

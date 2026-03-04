@@ -31,7 +31,7 @@ git remote add upstream https://github.com/cyberskill-world/.github.git
 
 # Using SSH
 git remote add fork git@github.com:YOUR-USERNAME/.github.git
-git remote add upstream git@github.com/cyberskill-world/.github.git
+git remote add upstream git@github.com:cyberskill-world/.github.git
 ```
 
 You can now verify that you have your two git remotes:

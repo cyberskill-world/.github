@@ -9,5 +9,33 @@
     ],
     "ignoreDeps": [
         "node"
+    ],
+    "enabledManagers": [
+        "github-actions",
+        "npm"
+    ],
+    "schedule": [
+        "after 9am and before 5pm on weekdays"
+    ],
+    "prHourlyLimit": 4,
+    "prConcurrentLimit": 10,
+    "vulnerabilityAlerts": {
+        "enabled": true,
+        "schedule": [
+            "at any time"
+        ],
+        "labels": [
+            "security"
+        ]
+    },
+    "packageRules": [
+        {
+            "matchUpdateTypes": [
+                "patch",
+                "digest"
+            ],
+            "automerge": true,
+            "automergeType": "pr"
+        }
     ]
 }
