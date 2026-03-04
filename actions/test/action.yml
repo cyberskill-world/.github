@@ -1,0 +1,26 @@
+---
+name: 🧪 Test
+description: This action runs the project's test suite with optional coverage upload.
+inputs:
+  COVERAGE:
+    description: Whether to upload coverage artifacts
+    required: false
+    default: "false"
+  COVERAGE_ARTIFACT_NAME:
+    description: Name of the coverage artifact
+    required: false
+    default: "coverage"
+runs:
+  using: "composite"
+  steps:
+    - name: Run tests
+      shell: bash
+      run: pnpm run --if-present test
+
+    - name: Upload coverage
+      if: ${{ inputs.COVERAGE == 'true' }}
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
+      with:
+        name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
+        path: coverage
+        retention-days: 7

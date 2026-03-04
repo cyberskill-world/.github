@@ -41,6 +41,7 @@ runs:
           # Perform the request
           http_code=$(jq -n --arg et "$event_trimmed" '{event_type: $et}' | curl -s -o /dev/null -w "%{http_code}" -X POST \
             -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Content-Type: application/json" \
             -d @- \
             "https://api.github.com/repos/$REPO/dispatches")
 

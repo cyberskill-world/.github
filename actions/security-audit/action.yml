@@ -1,0 +1,16 @@
+---
+name: 🛡️ Security Audit
+description: This action runs a security audit on project dependencies.
+inputs:
+  AUDIT_LEVEL:
+    description: Minimum vulnerability level to fail on (low, moderate, high, critical)
+    required: false
+    default: "high"
+runs:
+  using: "composite"
+  steps:
+    - name: Run security audit
+      shell: bash
+      env:
+        AUDIT_LEVEL: ${{ inputs.AUDIT_LEVEL }}
+      run: pnpm audit --audit-level="$AUDIT_LEVEL"

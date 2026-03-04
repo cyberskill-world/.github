@@ -46,7 +46,7 @@ runs:
           echo "❌ Branch $FROM_BRANCH or $TO_BRANCH not found"; exit 1;
         }
 
-        git checkout -- "$TO_BRANCH"
+        git checkout "$TO_BRANCH"
         git reset --hard "origin/$TO_BRANCH"
 
         echo "Merging $FROM_BRANCH into $TO_BRANCH with strategy: $STRATEGY"

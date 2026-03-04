@@ -55,7 +55,7 @@ Before starting development, you need to know which branch to base your modifica
 | Documentation                 |           | `main`              |
 | Bug fixes                     |           | `main`              |
 | New features                  |           | `main`              |
-| New issues models             |           | `YOUR-USERNAME:patch` |
+| New issues models             |           | `main`              |
 
 ```sh
 # Switch to the desired branch

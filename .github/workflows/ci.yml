@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-yaml:
     name: Validate YAML
@@ -31,8 +35,8 @@ jobs:
       - name: Install actionlint
         shell: bash
         run: |
-          VERSION="1.7.7"
-          CHECKSUM="024dd85d3110e25eba8be0de3c3090254d8fb3a1f6e106f9b6107f5f0405cc02"
+          VERSION="1.7.11"
+          CHECKSUM="7d588eeb1ceb1e926b5618162a082453e1618b7772597e4ef8270e08777a8114"
           BASE="https://github.com/rhysd/actionlint/releases/download"
           ARCHIVE="actionlint_${VERSION}_linux_amd64.tar.gz"
 

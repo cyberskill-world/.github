@@ -27,6 +27,9 @@ inputs:
   BRANCH:
     description: The branch to deploy from
     required: true
+  APP_NAME:
+    description: PM2 app name for targeted health check (if empty, checks any online process)
+    required: false
 runs:
   using: "composite"
   steps:
@@ -35,6 +38,7 @@ runs:
       env:
         DEPLOY_PATH: ${{ inputs.PATH }}
         DEPLOY_BRANCH: ${{ inputs.BRANCH }}
+        DEPLOY_APP_NAME: ${{ inputs.APP_NAME }}
       with:
         host: ${{ inputs.HOST }}
         port: ${{ inputs.PORT }}
@@ -42,13 +46,16 @@ runs:
         password: ${{ inputs.PASSWORD }}
         key: ${{ inputs.KEY }}
         passphrase: ${{ inputs.PASSPHRASE }}
-        envs: DEPLOY_PATH,DEPLOY_BRANCH
+        envs: DEPLOY_PATH,DEPLOY_BRANCH,DEPLOY_APP_NAME
         script: |
           set -euo pipefail
           if [ -f ~/.profile ]; then source ~/.profile; fi
           if [ -f ~/.nvm/nvm.sh ]; then source ~/.nvm/nvm.sh; fi || true
 
           # --- Validation ---
+          # ⚠️ SYNC: This function is duplicated from scripts/validate-branch.sh
+          # because this script runs via SSH on the remote server where the file isn't available.
+          # Keep both copies in sync!
           validate_branch() {
             local name="$1"
             local value="$2"
@@ -99,7 +106,14 @@ runs:
 
           # Health check with rollback on failure
           sleep 3
-          if ! pm2 ls | grep -qE "online"; then
+          APP_NAME_FILTER="${DEPLOY_APP_NAME:-}"
+          if [ -n "$APP_NAME_FILTER" ]; then
+            HEALTH_OK=$(pm2 jlist | jq -r --arg name "$APP_NAME_FILTER" '.[] | select(.name == $name) | .pm2_env.status' | grep -c "online" || true)
+          else
+            HEALTH_OK=$(pm2 ls | grep -c "online" || true)
+          fi
+
+          if [ "$HEALTH_OK" -eq 0 ]; then
             echo "❌ Health check failed! Rolling back to $PREV_COMMIT..."
             git checkout "$PREV_COMMIT"
             pnpm install --frozen-lockfile

@@ -20,7 +20,7 @@ This keeps the report private and allows us to collaborate on a fix before publi
 
 ### Alternative: Email
 
-If you cannot use GitHub Advisories, email us at **security@cyberskill.pro** with:
+If you cannot use GitHub Advisories, email us at **security@cyberskill.world** with:
 
 - Description of the vulnerability
 - Steps to reproduce

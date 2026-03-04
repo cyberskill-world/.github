@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Shared branch-name validation for reusable GitHub Actions.
 # Usage: source this file, then call `validate_branch "LABEL" "$BRANCH_VAR"`
+#
+# ⚠️ SYNC: This function is also inlined in actions/deploy/action.yml
+# because it runs via SSH on a remote server. Keep both copies in sync!
 
 set -euo pipefail
 

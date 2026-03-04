@@ -16,11 +16,13 @@ uses: cyberskill-world/.github/actions/<action-name>@main
 | [`build`](../actions/build) | Runs `pnpm build` and optionally uploads artifacts |
 | [`lint`](../actions/lint) | Runs YAML lint + `pnpm lint` |
 | [`lint-yaml`](../actions/lint-yaml) | Standalone YAML linting via `yamllint` |
+| [`test`](../actions/test) | Runs `pnpm test` with optional coverage upload |
+| [`security-audit`](../actions/security-audit) | Runs `pnpm audit` with configurable severity threshold |
 | [`deploy`](../actions/deploy) | SSH deploy with health-check and automatic rollback |
-| [`create-pr`](../actions/create-pr) | Creates a pull request via `gh` CLI |
+| [`create-pr`](../actions/create-pr) | Creates a pull request via `gh` CLI (idempotent) |
 | [`merge`](../actions/merge) | Merges one branch into another with strategy option |
 | [`rebase`](../actions/rebase) | Rebases a branch onto another |
-| [`match-branch`](../actions/match-branch) | Conditionally runs steps only on a specific branch |
+| [`match-branch`](../actions/match-branch) | Checks branch match and sets `matched` output |
 | [`trigger-events`](../actions/trigger-events) | Fires `repository_dispatch` events with concurrency control |
 
 ### Quick Start
@@ -37,8 +39,14 @@ jobs:
       - name: Setup environment
         uses: cyberskill-world/.github/actions/env-deps@main
 
+      - name: Security Audit
+        uses: cyberskill-world/.github/actions/security-audit@main
+
       - name: Lint
         uses: cyberskill-world/.github/actions/lint@main
+
+      - name: Test
+        uses: cyberskill-world/.github/actions/test@main
 
       - name: Build
         uses: cyberskill-world/.github/actions/build@main

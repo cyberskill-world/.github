@@ -34,6 +34,11 @@ runs:
         PR_TITLE: ${{ inputs.TITLE }}
         PR_BODY: ${{ inputs.BODY }}
       run: |
+        existing=$(gh pr list --base "$PR_BASE" --head "$PR_HEAD" --state open --json number -q '.[0].number' 2>/dev/null || true)
+        if [ -n "$existing" ]; then
+          echo "ℹ️ PR #$existing already exists ($PR_HEAD → $PR_BASE). Skipping."
+          exit 0
+        fi
         gh pr create \
           --base "$PR_BASE" \
           --head "$PR_HEAD" \
