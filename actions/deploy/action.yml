@@ -107,11 +107,13 @@ runs:
           if [[ -z "$DEPLOY_PATH" ]]; then
             echo "❌ DEPLOY_PATH must not be empty" >&2; exit 1
           fi
-          if [[ "$DEPLOY_PATH" != /* ]]; then
-            echo "❌ DEPLOY_PATH must be an absolute path (got: '$DEPLOY_PATH')" >&2; exit 1
-          fi
           if [[ "$DEPLOY_PATH" == *..* ]]; then
-            echo "❌ DEPLOY_PATH must not contain '..' (path traversal) (got: '$DEPLOY_PATH')" >&2; exit 1
+            echo "❌ DEPLOY_PATH must not contain '..' (path traversal)" >&2; exit 1
+          fi
+          # Resolve relative paths to absolute (relative to $HOME)
+          if [[ "$DEPLOY_PATH" != /* ]]; then
+            DEPLOY_PATH="$HOME/$DEPLOY_PATH"
+            echo "ℹ️ Resolved relative path to: $DEPLOY_PATH"
           fi
           if [[ ! -d "$DEPLOY_PATH" ]]; then
             echo "❌ DEPLOY_PATH '$DEPLOY_PATH' does not exist or is not a directory" >&2; exit 1
