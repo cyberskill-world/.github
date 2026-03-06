@@ -96,7 +96,7 @@ You can validate actions locally before pushing:
 yamllint -c .yamllint .
 
 # Validate action schemas (requires Go)
-go install github.com/rhysd/actionlint/cmd/actionlint@latest
+go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.11
 actionlint -color
 
 # Lint shell scripts

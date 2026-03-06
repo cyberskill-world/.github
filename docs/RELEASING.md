@@ -27,6 +27,8 @@ Since all repos consume actions from `@main`, breaking changes require coordinat
 
 ## Versioning
 
+> **Note:** The SemVer tags described below are **org-wide tag protection rules** enforced by `settings.yml`. They apply to all CyberSkill repositories that use Git tags for releases (e.g., npm packages, Tauri apps). They are **not** used for consuming these shared actions — actions always reference `@main`.
+
 - **Tags** follow [Semantic Versioning](https://semver.org/) and are enforced by the `settings.yml` rulesets
 - Tag protection rules prevent deletion and non-fast-forward updates
 - Tag names must match the SemVer pattern (e.g., `1.0.0`, `2.1.0-beta.1`)

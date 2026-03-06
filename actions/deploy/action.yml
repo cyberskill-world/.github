@@ -12,10 +12,7 @@ inputs:
   USERNAME:
     description: The username to connect to the server
     required: true
-  PASSWORD:
-    description: "(Deprecated: prefer KEY-based auth) The password to connect to the server"
-    required: false
-    deprecationMessage: "PASSWORD-based SSH auth is discouraged. Use KEY-based authentication instead."
+
   KEY:
     description: The private key to connect to the server
     required: true
@@ -39,6 +36,14 @@ inputs:
     description: Seconds to wait between health check retries
     required: false
     default: "3"
+  BUILD_COMMAND:
+    description: "Command to install deps and build the project (runs on remote server)"
+    required: false
+    default: "pnpm install --frozen-lockfile && pnpm build"
+  RELOAD_COMMAND:
+    description: "Command to reload the application after build (runs on remote server)"
+    required: false
+    default: "pm2 startOrReload ecosystem.config.cjs --update-env && pm2 save"
 runs:
   using: "composite"
   steps:
@@ -50,14 +55,15 @@ runs:
         DEPLOY_APP_NAME: ${{ inputs.APP_NAME }}
         HEALTH_RETRIES: ${{ inputs.HEALTH_CHECK_RETRIES }}
         HEALTH_INTERVAL: ${{ inputs.HEALTH_CHECK_INTERVAL }}
+        BUILD_CMD: ${{ inputs.BUILD_COMMAND }}
+        RELOAD_CMD: ${{ inputs.RELOAD_COMMAND }}
       with:
         host: ${{ inputs.HOST }}
         port: ${{ inputs.PORT }}
         username: ${{ inputs.USERNAME }}
-        password: ${{ inputs.PASSWORD }}
         key: ${{ inputs.KEY }}
         passphrase: ${{ inputs.PASSPHRASE }}
-        envs: DEPLOY_PATH,DEPLOY_BRANCH,DEPLOY_APP_NAME,HEALTH_RETRIES,HEALTH_INTERVAL
+        envs: DEPLOY_PATH,DEPLOY_BRANCH,DEPLOY_APP_NAME,HEALTH_RETRIES,HEALTH_INTERVAL,BUILD_CMD,RELOAD_CMD
         script: |
           set -euo pipefail
           if [ -f ~/.profile ]; then source ~/.profile; fi
@@ -130,20 +136,17 @@ runs:
           git checkout "$DEPLOY_BRANCH"
           git pull origin "$DEPLOY_BRANCH"
 
-          echo "📦 Installing dependencies..."
-          pnpm install --frozen-lockfile
-
-          echo "🏗️ Building project..."
-          pnpm build
+          echo "📦 Building project..."
+          bash -c "$BUILD_CMD"
 
           echo "🔄 Reloading application..."
-          pm2 startOrReload ecosystem.config.cjs --update-env
-          pm2 save
+          bash -c "$RELOAD_CMD"
 
           # Health check with retry loop and rollback on failure
           APP_NAME_FILTER="${DEPLOY_APP_NAME:-}"
           HEALTH_OK=0
           for attempt in $(seq 1 "$HEALTH_RETRIES"); do
+            echo "⏳ Health check attempt $attempt/$HEALTH_RETRIES..."
             sleep "$HEALTH_INTERVAL"
             if [ -n "$APP_NAME_FILTER" ]; then
               HEALTH_OK=$(pm2 jlist | jq -r --arg name "$APP_NAME_FILTER" '.[] | select(.name == $name) | .pm2_env.status' | grep -c "online" || true)
@@ -153,20 +156,18 @@ runs:
             if [ "$HEALTH_OK" -gt 0 ]; then
               break
             fi
-            echo "⏳ Health check attempt $attempt/$HEALTH_RETRIES..."
           done
 
           if [ "$HEALTH_OK" -eq 0 ]; then
             echo "❌ Health check failed! Rolling back to $PREV_COMMIT..."
             git reset --hard "$PREV_COMMIT"
-            pnpm install --frozen-lockfile
-            pnpm build
-            pm2 startOrReload ecosystem.config.cjs --update-env
-            pm2 save
+            bash -c "$BUILD_CMD"
+            bash -c "$RELOAD_CMD"
 
             # Verify rollback succeeded with same health check
             ROLLBACK_OK=0
             for attempt in $(seq 1 "$HEALTH_RETRIES"); do
+              echo "⏳ Rollback health check attempt $attempt/$HEALTH_RETRIES..."
               sleep "$HEALTH_INTERVAL"
               if [ -n "$APP_NAME_FILTER" ]; then
                 ROLLBACK_OK=$(pm2 jlist | jq -r --arg name "$APP_NAME_FILTER" '.[] | select(.name == $name) | .pm2_env.status' | grep -c "online" || true)
@@ -176,7 +177,6 @@ runs:
               if [ "$ROLLBACK_OK" -gt 0 ]; then
                 break
               fi
-              echo "⏳ Rollback health check attempt $attempt/$HEALTH_RETRIES..."
             done
 
             if [ "$ROLLBACK_OK" -eq 0 ]; then

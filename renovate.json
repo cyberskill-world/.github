@@ -39,6 +39,19 @@
             "automerge": true,
             "automergeType": "pr",
             "minimumReleaseAge": "3 days"
+        },
+        {
+            "matchManagers": ["github-actions"],
+            "groupName": "GitHub Actions",
+            "automerge": true,
+            "automergeType": "pr",
+            "minimumReleaseAge": "3 days"
+        },
+        {
+            "matchManagers": ["github-actions"],
+            "matchUpdateTypes": ["major"],
+            "automerge": false,
+            "minimumReleaseAge": "7 days"
         }
     ]
 }

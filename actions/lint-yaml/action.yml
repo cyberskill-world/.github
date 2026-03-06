@@ -24,3 +24,9 @@ runs:
     - name: Lint YAML files
       run: yamllint -c "${{ github.action_path }}/../../.yamllint" .
       shell: bash
+
+    - name: Cleanup temp requirements file
+      if: always()
+      shell: bash
+      run: rm -f .github-action-requirements.txt
+

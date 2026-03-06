@@ -14,6 +14,10 @@ inputs:
     description: "Minimum coverage percentage to pass (e.g., '80'). Requires a coverage/coverage-summary.json file. Leave empty to skip."
     required: false
     default: ""
+  RETENTION_DAYS:
+    description: Number of days to retain the coverage artifact
+    required: false
+    default: "7"
 runs:
   using: "composite"
   steps:
@@ -33,13 +37,20 @@ runs:
           echo "::warning::Coverage summary not found at $SUMMARY. Skipping threshold check."
           exit 0
         fi
-        ACTUAL=$(python3 -c "import json; print(json.load(open('$SUMMARY'))['total']['lines']['pct'])" 2>/dev/null || echo "0")
-        echo "📊 Coverage: ${ACTUAL}% (threshold: ${THRESHOLD}%)"
-        if [ "$(echo "$ACTUAL < $THRESHOLD" | bc -l)" -eq 1 ]; then
-          echo "::error::Coverage ${ACTUAL}% is below threshold ${THRESHOLD}%"
+        FAILED=0
+        for METRIC in lines branches functions statements; do
+          ACTUAL=$(python3 -c "import json; print(json.load(open('$SUMMARY'))['total']['$METRIC']['pct'])" 2>/dev/null || echo "0")
+          echo "📊 $METRIC: ${ACTUAL}% (threshold: ${THRESHOLD}%)"
+          if [ "$(echo "$ACTUAL < $THRESHOLD" | bc -l)" -eq 1 ]; then
+            echo "::error::Coverage for $METRIC (${ACTUAL}%) is below threshold ${THRESHOLD}%"
+            FAILED=$((FAILED + 1))
+          fi
+        done
+        if [ "$FAILED" -gt 0 ]; then
+          echo "::error::$FAILED coverage metric(s) below threshold."
           exit 1
         fi
-        echo "✅ Coverage meets threshold."
+        echo "✅ All coverage metrics meet threshold."
 
     - name: Upload coverage
       if: ${{ inputs.COVERAGE == 'true' }}
@@ -47,4 +58,4 @@ runs:
       with:
         name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
         path: coverage
-        retention-days: 7
+        retention-days: ${{ inputs.RETENTION_DAYS }}

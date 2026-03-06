@@ -10,20 +10,41 @@ All actions live under `actions/` and can be referenced by any repo in the org:
 uses: cyberskill-world/.github/actions/<action-name>@main
 ```
 
-| Action | Description |
-| ------ | ----------- |
-| [`env-deps`](../actions/env-deps) | Sets up pnpm, Node.js, `.env`, and installs dependencies |
-| [`build`](../actions/build) | Runs `pnpm build` and optionally uploads artifacts |
-| [`lint`](../actions/lint) | Runs YAML lint + `pnpm lint` (with optional `SKIP_YAML_LINT` input) |
-| [`lint-yaml`](../actions/lint-yaml) | Standalone YAML linting via `yamllint` |
-| [`test`](../actions/test) | Runs `pnpm test` with optional coverage upload |
-| [`security-audit`](../actions/security-audit) | Runs `pnpm audit` with configurable severity threshold |
-| [`deploy`](../actions/deploy) | SSH deploy with health-check and automatic rollback |
-| [`create-pr`](../actions/create-pr) | Creates a pull request via `gh` CLI (idempotent) |
-| [`merge`](../actions/merge) | Merges one branch into another with strategy option |
-| [`rebase`](../actions/rebase) | Rebases a branch onto another |
-| [`match-branch`](../actions/match-branch) | Checks branch match and sets `matched` output |
-| [`trigger-events`](../actions/trigger-events) | Fires `repository_dispatch` events with concurrency control |
+| Action | Description | Key Inputs |
+| ------ | ----------- | ---------- |
+| [`env-deps`](../actions/env-deps) | Sets up pnpm, Node.js, `.env`, and installs dependencies | `NODE_VERSION` (default: `24.12.0`), `PNPM_VERSION` (default: `10.29.3`) |
+| [`build`](../actions/build) | Runs `pnpm build` and optionally uploads artifacts | `BUILD_ARTIFACT_NAME`, `BUILD_PATH`, `RETENTION_DAYS` |
+| [`lint`](../actions/lint) | Runs YAML lint + `pnpm lint` (with optional `SKIP_YAML_LINT` input) | `SKIP_YAML_LINT` |
+| [`lint-yaml`](../actions/lint-yaml) | Standalone YAML linting via `yamllint` | — |
+| [`test`](../actions/test) | Runs `pnpm test` with optional coverage upload and multi-metric threshold | `COVERAGE`, `COVERAGE_THRESHOLD`, `COVERAGE_ARTIFACT_NAME` |
+| [`security-audit`](../actions/security-audit) | Runs `pnpm audit` with configurable severity threshold | `AUDIT_LEVEL` (default: `high`), `OUTPUT_FORMAT` |
+| [`deploy`](../actions/deploy) | SSH deploy with health-check and automatic rollback | `HOST`\*, `KEY`\*, `PATH`\*, `BRANCH`\*, `BUILD_COMMAND`, `RELOAD_COMMAND` |
+| [`create-pr`](../actions/create-pr) | Creates a pull request via `gh` CLI (idempotent) | `GH_TOKEN`\*, `FROM`\*, `TO`\*, `LABELS`, `ASSIGNEES` |
+| [`merge`](../actions/merge) | Merges one branch into another with strategy option | `GH_TOKEN`\*, `FROM`\*, `TO`\*, `CHOOSE_STRATEGY` |
+| [`rebase`](../actions/rebase) | Rebases a branch onto another | `GH_TOKEN`\*, `FROM`\*, `TO`\*, `DRY_RUN` |
+| [`match-branch`](../actions/match-branch) | Checks branch match and sets `matched` output | `BRANCH`\* |
+| [`trigger-events`](../actions/trigger-events) | Fires `repository_dispatch` events with concurrency control | `GH_TOKEN`\*, `REPO`\*, `EVENTS`\* |
+
+\* = required
+
+### Permissions Reference
+
+Minimum GitHub token permissions required by each action:
+
+| Action | Required Permissions |
+| ------ | -------------------- |
+| `env-deps` | `contents: read` |
+| `build` | `contents: read` (+ `actions: write` if uploading artifacts) |
+| `lint` | `contents: read` |
+| `lint-yaml` | `contents: read` |
+| `test` | `contents: read` (+ `actions: write` if uploading coverage) |
+| `security-audit` | `contents: read` (+ `actions: write` if uploading report) |
+| `deploy` | None (runs on remote SSH server) |
+| `create-pr` | `contents: write`, `pull-requests: write` |
+| `merge` | `contents: write` |
+| `rebase` | `contents: write` |
+| `match-branch` | `contents: read` |
+| `trigger-events` | — requires a PAT or GitHub App with `repo` scope |
 
 ### Quick Start
 
@@ -82,6 +103,8 @@ The [CI workflow](../.github/workflows/ci.yml) validates this repo itself:
 6. **Validate CODEOWNERS** — Syntax validation for ownership rules
 7. **Detect Breaking Changes** — Flags removed required inputs (override with label)
 8. **Verify README Sync** — Ensures all actions are documented
+9. **Dependency Review** — Scans PR dependencies for known vulnerabilities (PR only)
+10. **Validate Settings Schema** — Validates `settings.yml` structure and values
 
 ## 📋 Other Config
 
@@ -90,3 +113,5 @@ The [CI workflow](../.github/workflows/ci.yml) validates this repo itself:
 | [`CODEOWNERS`](../CODEOWNERS) | Auto-assigns `@cyberskill-world/core` for reviews |
 | [`renovate.json`](../renovate.json) | Automated dependency updates (pnpm + GitHub Actions) |
 | [`.yamllint`](../.yamllint) | Shared YAML lint configuration |
+| [`.editorconfig`](../.editorconfig) | Consistent editor settings (indent, line endings) |
+| [`CHANGELOG.md`](CHANGELOG.md) | Notable changes to actions and configurations |

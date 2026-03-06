@@ -23,6 +23,14 @@ inputs:
     description: "Skip the checkout step if the repo is already checked out (default: false)"
     required: false
     default: "false"
+  LABELS:
+    description: "Comma-separated labels to apply to the PR (optional)"
+    required: false
+    default: ""
+  ASSIGNEES:
+    description: "Comma-separated GitHub usernames to assign to the PR (optional)"
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -38,14 +46,33 @@ runs:
         PR_HEAD: ${{ inputs.FROM }}
         PR_TITLE: ${{ inputs.TITLE }}
         PR_BODY: ${{ inputs.BODY }}
+        PR_LABELS: ${{ inputs.LABELS }}
+        PR_ASSIGNEES: ${{ inputs.ASSIGNEES }}
       run: |
+        set -euo pipefail
+
+        # Source shared validation
+        source "${{ github.action_path }}/../../scripts/validate-branch.sh"
+
+        validate_branch "FROM" "$PR_HEAD"
+        validate_branch "TO" "$PR_BASE"
+
         existing=$(gh pr list --base "$PR_BASE" --head "$PR_HEAD" --state open --json number -q '.[0].number' 2>/dev/null || true)
         if [ -n "$existing" ]; then
           echo "ℹ️ PR #$existing already exists ($PR_HEAD → $PR_BASE). Skipping."
           exit 0
         fi
+        EXTRA_ARGS=()
+        if [ -n "$PR_LABELS" ]; then
+          EXTRA_ARGS+=(--label "$PR_LABELS")
+        fi
+        if [ -n "$PR_ASSIGNEES" ]; then
+          EXTRA_ARGS+=(--assignee "$PR_ASSIGNEES")
+        fi
         gh pr create \
           --base "$PR_BASE" \
           --head "$PR_HEAD" \
           --title "$PR_TITLE" \
-          --body "$PR_BODY"
+          --body "$PR_BODY" \
+          "${EXTRA_ARGS[@]}"
+

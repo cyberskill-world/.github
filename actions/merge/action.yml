@@ -63,3 +63,4 @@ runs:
         git merge "${MERGE_ARGS[@]}"
 
         git push origin "HEAD:refs/heads/$TO_BRANCH"
+        echo "✅ Merged. New HEAD: $(git rev-parse HEAD)"

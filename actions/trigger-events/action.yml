@@ -21,6 +21,12 @@ runs:
         REPO: ${{ inputs.REPO }}
         EVENTS: ${{ inputs.EVENTS }}
       run: |
+        # Validate REPO format (must be owner/repo)
+        if [[ ! "$REPO" =~ ^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$ ]]; then
+          echo "::error::REPO must be in 'owner/repo' format, got: '$REPO'"
+          exit 1
+        fi
+
         # Configuration
         MAX_JOBS=10
         STATUS_DIR=$(mktemp -d)

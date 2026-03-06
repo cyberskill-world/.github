@@ -28,8 +28,14 @@ runs:
       shell: bash
       run: |
         if [ -f ".env.example" ]; then
+          # Guard: scan for common secret patterns before copying
+          SECRET_PATTERNS='(sk_live|sk_test|ghp_|gho_|github_pat_|password=.+[^\s]|secret=.+[^\s]|PRIVATE_KEY=.+[^\s])'
+          if grep -qEi "$SECRET_PATTERNS" .env.example 2>/dev/null; then
+            echo "::error::.env.example appears to contain real secrets! Review and remove them before committing."
+            exit 1
+          fi
           cp .env.example .env
-          echo "⚠️ Copied .env.example → .env — ensure .env.example contains NO real secrets."
+          echo "✅ Copied .env.example → .env (no secret patterns detected)."
         else
           echo ".env.example not found. Skipping."
         fi
