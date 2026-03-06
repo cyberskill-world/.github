@@ -132,9 +132,15 @@ runs:
           PREV_COMMIT=$(git rev-parse HEAD)
 
           echo "⬇️ Fetching latest changes..."
-          git fetch origin +refs/heads/"$DEPLOY_BRANCH":refs/remotes/origin/"$DEPLOY_BRANCH"
-          git checkout "$DEPLOY_BRANCH"
-          git pull origin "$DEPLOY_BRANCH"
+          # ⚡ Bolt: Targeted fetch for performance, with fallback for non-standard refs/tags
+          git fetch origin +refs/heads/"$DEPLOY_BRANCH":refs/remotes/origin/"$DEPLOY_BRANCH" || git fetch origin "$DEPLOY_BRANCH"
+
+          # ⚡ Bolt: Avoid 'git pull' which fails on detached HEAD (tags).
+          # Checkout local branch if it exists, otherwise detached FETCH_HEAD
+          git checkout -q "$DEPLOY_BRANCH" 2>/dev/null || git checkout -q FETCH_HEAD
+
+          # Reset hard to ensure we match the remote state exactly
+          git reset --hard FETCH_HEAD
 
           echo "📦 Building project..."
           bash -c "$BUILD_CMD"
