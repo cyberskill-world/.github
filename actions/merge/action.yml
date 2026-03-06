@@ -29,7 +29,8 @@ runs:
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git remote set-url origin "https://x-access-token:$GH_TOKEN@github.com/${{ github.repository }}"
+        # Securely pass the GH_TOKEN without embedding it in the remote URL where it could leak
+        git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n "x-access-token:${GH_TOKEN}" | base64 | tr -d '\n')"
 
     - name: Merge and Push
       shell: bash
